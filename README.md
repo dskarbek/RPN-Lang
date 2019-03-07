@@ -35,10 +35,12 @@ Evaluates a reverse polish notation expression against a set of variables. The e
 `~` | Pop one value and push the bit-wise NOT of it
 `<<` | Pop two values and use the top one to shift the second one left (increase value).
 `>>` | Pop two values and use the top one to shift the second one right (decrease value).
+`$` | Pushes the current stack size (prior to pushing) onto the stack.
 
 ## String operators
 ---- | -----
 `.` | Concatenate top two values (as strings) on the stack and push the result.
+`"` | Push a single space as a token.
 
 ## Control operators
 ---- | -----
@@ -94,4 +96,44 @@ This generates a fibonacci sequence of N values. In the sample, N is set to 10.
 } fib =>
 
 10 fib ? ()
+```
+## Reverse List
+```
+{
+  $ 0 >
+  {
+    val =>
+    result ? " . val ? .
+    result =>
+    rev_list_loop ? ()
+  }
+  {
+    result ? ()
+  }
+  ?: ()
+} rev_list_loop =>
+{
+  { } result =>
+  rev_list_loop ? ()
+} rev_list =>
+1 2 3 4 5
+rev_list ? ()
+```
+## Join
+```
+{
+  delimiter =>
+  $ 1 >
+  {
+    last =>
+    prior =>
+    prior ? delimiter ? last ? . .
+    delimiter ? join ? ()
+  }
+  { }
+  ?: ()
+} join =>
+
+1 2 3 \-
+join ? ()
 ```
