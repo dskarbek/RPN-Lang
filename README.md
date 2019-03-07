@@ -19,7 +19,7 @@ Token | Description
 `>` | The following comparison operators all function similar to '<'
 `<=` |
 `>=` |
-`||` | Pop two values and push the logical OR of them
+`\|\|` | Pop two values and push the logical OR of them
 `&&` | Pop two values and push the logical AND of them
 `!` | Pop one value and push the logical NOT of them
 
@@ -33,7 +33,7 @@ Token | Description
 `\` | Pop two values and do integer division (round down any fractional part): "6 3 \" is 2; "3 6 \" is 0
 `%` | Pop two values and get the modulus value from division: "6 3 %" is 0; "3 6 %" is 3
 `&` | Pop two values and push a bit-wise AND of them
-`|` | Pop two values and push a bit-wise OR of them
+`\|` | Pop two values and push a bit-wise OR of them
 `^` | Pop two values and push a bit-wise XOR of them
 `~` | Pop one value and push the bit-wise NOT of it
 `<<` | Pop two values and use the top one to shift the second one left (increase value).
