@@ -2,13 +2,17 @@
 JavaScript implementation of an interpreter for a little language based on Reverse Polish Notation (RPN)
 
 # Language
-Evaluates a reverse polish notation expression against a set of variables. The expected format is that white-space separates each token. The basic run-time elements is the stack of tokens that are being parsed and a hash-table of variables that are being referenced.
+Evaluates a reverse polish notation expression against a set of variables. The expected format is that white-space separates each token. The basic run-time elements are the stack of parsed tokens and a hash-table of variables.
 
 ## Constants
 Token | Description
 ---- | -----
 `val` | Any string that does not match an operation is interpreted as a literal value.
 `\val` | A backslash is removed from the start of a constant and the rest of the token is always taken as a constant. Use this to escape an operator to be processed as a constant.
+`#` | Pops an discards the last token on the stack, use along with `{ ... }` to make comments
+`true` | A boolean true value.
+`false` | A boolean false value. These are the only words that are reserved symbols.
+`undef` | The value a variable has before it is assigned to.
 
 ## Boolean operators
 Token | Description
@@ -51,95 +55,14 @@ Token | Description
 ---- | -----
 `?:` | Ternary, or if-then-else, operator: "test a b ?:" evals to `a` if `test` is true and to `b` if `test` is false.
 `()` | Pop the top of stack and evaluates it as a RPNLang expression. Typically, the top of stack should be a `{ ... }` quoted expression.
+`?:->` | Does a ternary operator evaluation just like `?:` but then evaluates the result as an RPNLang expression. Good for when you are using the ternary operator for conditional evaluation. Literally equivallent to `?: ()`
 `{ ... }` | Quotes the enclosed tokens into a single token on the stack. Can be nested. This is primarily useful for defining expressions to pass to the eval operator
 
 ## Variable operators
 Token | Description
 ---- | -----
-`?` | Evaluates the top of stack token as a variable name and pushes on its value in its place.
-`=>` | This is the variable assignment operator: "5 a =>" sets a to 5.
-
-# Samples
-To help you pick up on the sort of things you can do, here's some sample programs.
-## Fibonacci
-This generates a fibonacci sequence of N values. In the sample, N is set to 10.
-```
-{
-  b =>
-  a =>
-  a ?
-  b ?
-  a ? b ? +
-} preserve_args_and_sum =>
-
-{
-  count =>
-  count ? 0 !=
-  {
-    preserve_args_and_sum ? ()
-    count ? 1 -
-    fib_safe ? ()
-  }
-  { }
-  ?: ()
-} fib_safe =>
-
-{
-  count =>
-  count ? 2 >=
-  {
-    0 1
-    count ? 2 - 
-    fib_safe ? ()
-  }
-  {
-    count ? 1 ==
-    0
-    { Invalid argument, must be called with a positive number. }
-    ?:
-  }
-  ?: ()
-} fib =>
-
-10 fib ? ()
-```
-## Reverse List
-```
-{
-  $ 0 >
-  {
-    val =>
-    result ? " . val ? .
-    result =>
-    rev_list_loop ? ()
-  }
-  {
-    result ? ()
-  }
-  ?: ()
-} rev_list_loop =>
-{
-  { } result =>
-  rev_list_loop ? ()
-} rev_list =>
-1 2 3 4 5
-rev_list ? ()
-```
-## Join
-```
-{
-  delimiter =>
-  $ 1 >
-  {
-    last =>
-    prior =>
-    prior ? delimiter ? last ? . .
-    delimiter ? join ? ()
-  }
-  { }
-  ?: ()
-} join =>
-
-1 2 3 \-
-join ? ()
-```
+`:=` | This is the variable assignment operator: "5 a :=" sets a to 5. Previously assigned values aren't actually lost, each variable is actually a stack, and this pushes on a new value.
+`?` | Evaluates the top of stack token as a variable name and pushes on its value in its place. This is a "peek" on the variable stack.
+`?!` | Takes the top of stack token as a variable name and un-assigns the last assigned value. The previously assigned value of the variable will now be in place. The value that was un-assigned is pushed onto the stack. Use `#` if you want to ignore it. This is the "pop" of the variable stack.
+`$var` | For any "var" gives the number of values that have been assigned to it. This is the "stack depth" of the variable.
+`->` | Evaluates the top of stack token as a variable that resolves to a value that is evaluated as an RPNLang expression. Literally equivallent to `? ()`

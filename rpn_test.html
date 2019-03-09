@@ -11,9 +11,11 @@
 	    return true;
 	}
 
+	var rpn_lang = new RPNLang();
+
 	jQuery(function() {
-		$('#input').bind('input change', function() {
-			var rpn_lang = new RPNLang({});	
+		$('#runBtn').click(function() {
+			let rpn_lang = new RPNLang();	
 			$('#output').html(rpn_lang.evaluate($('#input').val()));
 		});
 	});
@@ -23,6 +25,7 @@
 <form>
 	<h2>Input:</h2>
 	<textarea id=input rows=15 cols=80></textarea>
+	<input type="button" id=runBtn value="Run"/>
 	<h2>Output:</h2>
 	<textarea id=output rows=4 cols=80></textarea>
 </form>
