@@ -15,35 +15,37 @@
 
     jQuery(function() {
         $('#runBtn').click(function() {
-                        rpn_lang.reset();
-                        rpn_lang.evaluate($('#input').val())
+            rpn_lang.reset();
+            rpn_lang.evaluate($('#input').val())
             $('#output').html(rpn_lang.get_stack());
+            $('#debug').html("");
+            $('#vars').html("");
         });
         $('#debugBtn').click(function() {
             rpn_lang.reset();
             rpn_lang.start_debug($('#input').val());
             $('#debug').html(rpn_lang.get_debug_lines());
-                        $('#vars').html(rpn_lang.get_variables());
+            $('#vars').html(rpn_lang.get_variables());
         });
         $('#stepBtn').click(function() {
-                        rpn_lang.step_debug();
+            rpn_lang.step_debug();
             $('#output').html(rpn_lang.get_stack());
             $('#debug').html(rpn_lang.get_debug_lines());
-                        $('#vars').html(rpn_lang.get_variables());
+            $('#vars').html(rpn_lang.get_variables());
         });
-                $('#continueBtn').click(function() {
-                        rpn_lang.continue_debug();
+        $('#continueBtn').click(function() {
+            rpn_lang.continue_debug();
             $('#output').html(rpn_lang.get_stack());
             $('#debug').html(rpn_lang.get_debug_lines());
-                        $('#vars').html(rpn_lang.get_variables());
-                });
+            $('#vars').html(rpn_lang.get_variables());
+        });
     });
 </script>
 </head>
 <body>
 <form>
 <table><tr><td valign=top>
-    <h2>Input:</h2>
+    <h2>Input</h2>
     <textarea id=input rows=15 cols=80>    {
         value :=
         name :=
@@ -290,14 +292,15 @@ testing_results ->
 </textarea>
     <br>
     <input type="button" id=runBtn value="Run"/>
-    <input type="button" id=debugBtn value="Debug"/>
-    <input type="button" id=stepBtn value="Step"/>
-    <input type="button" id=continueBtn value="Continue"/>
-    <h2>Output:</h2>
-    <textarea id=output rows=4 cols=80></textarea>
+    <h2>Output</h2>
+    <textarea id=output rows=10 cols=80></textarea>
     </td><td valign=top>
     <h2>Instruction Buffer</h2>
     <textarea id=debug rows=15 cols=80></textarea>
+    <br>
+    <input type="button" id=debugBtn value="Start Debug"/>
+    <input type="button" id=stepBtn value="Step"/>
+    <input type="button" id=continueBtn value="Continue"/>
     <h2>Variables</h2>
     <textarea id=vars rows=10 cols=80></textarea>
     </td></tr></table>
