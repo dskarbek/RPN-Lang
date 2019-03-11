@@ -13,6 +13,8 @@ Token | Description
 `true` | A boolean true value.
 `false` | A boolean false value. These are the only words that are reserved symbols.
 `undef` | The value a variable has before it is assigned to.
+`"` | Push a single space onto the stack.
+`\n` | Push a new line character onto the stack.
 
 ## Boolean operators
 Token | Description
@@ -48,7 +50,6 @@ Token | Description
 Token | Description
 ---- | -----
 `.` | Concatenate top two values (as strings) on the stack and push the result.
-`"` | Push a single space as a token.
 
 ## Control operators
 Token | Description
@@ -57,6 +58,8 @@ Token | Description
 `()` | Pop the top of stack and evaluates it as a RPNLang expression. Typically, the top of stack should be a `{ ... }` quoted expression.
 `?:->` | Does a ternary operator evaluation just like `?:` but then evaluates the result as an RPNLang expression. Good for when you are using the ternary operator for conditional evaluation. Literally equivallent to `?: ()`
 `{ ... }` | Quotes the enclosed tokens into a single token on the stack. Can be nested. This is primarily useful for defining expressions to pass to the eval operator
+`><` | Has no effect on the program, but sets a breakpoint so if the interpreter is running in a debug mode it can choose to stop at this point.
+`!!` | Flushes the stack to output, joins all current values without delimiters and adds a newline to the end. If the stack is empty, does nothing.
 
 ## Variable operators
 Token | Description

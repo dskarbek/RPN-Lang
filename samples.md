@@ -174,7 +174,7 @@ reverse_last_n :=
 		n unassign ->
 		delimiter unassign ->
 	}
-join :=
+join_last_n :=
 
 	{
 		_fib_count :=

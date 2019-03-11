@@ -6,28 +6,301 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="RPNLang.js"></script>
 <script>
-	window.onerror = function(msg, url, linenumber) {
-	    alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber);
-	    return true;
-	}
+    window.onerror = function(msg, url, linenumber) {
+        alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber);
+        return true;
+    }
 
-	var rpn_lang = new RPNLang();
+    var rpn_lang = new RPNLang();
 
-	jQuery(function() {
-		$('#runBtn').click(function() {
-			let rpn_lang = new RPNLang();	
-			$('#output').html(rpn_lang.evaluate($('#input').val()));
-		});
-	});
+    jQuery(function() {
+        $('#runBtn').click(function() {
+                        rpn_lang.reset();
+                        rpn_lang.evaluate($('#input').val())
+            $('#output').html(rpn_lang.get_stack());
+        });
+        $('#debugBtn').click(function() {
+            rpn_lang.reset();
+            rpn_lang.start_debug($('#input').val());
+            $('#debug').html(rpn_lang.get_debug_lines());
+                        $('#vars').html(rpn_lang.get_variables());
+        });
+        $('#stepBtn').click(function() {
+                        rpn_lang.step_debug();
+            $('#output').html(rpn_lang.get_stack());
+            $('#debug').html(rpn_lang.get_debug_lines());
+                        $('#vars').html(rpn_lang.get_variables());
+        });
+                $('#continueBtn').click(function() {
+                        rpn_lang.continue_debug();
+            $('#output').html(rpn_lang.get_stack());
+            $('#debug').html(rpn_lang.get_debug_lines());
+                        $('#vars').html(rpn_lang.get_variables());
+                });
+    });
 </script>
 </head>
 <body>
 <form>
-	<h2>Input:</h2>
-	<textarea id=input rows=15 cols=80></textarea>
-	<input type="button" id=runBtn value="Run"/>
-	<h2>Output:</h2>
-	<textarea id=output rows=4 cols=80></textarea>
+<table><tr><td valign=top>
+    <h2>Input:</h2>
+    <textarea id=input rows=15 cols=80>    {
+        value :=
+        name :=
+        name ? ?! value ?! + name ?! :=
+    }
+increment_by :=
+
+    {
+        value :=
+        name :=
+        name ? ?! value ?! - name ?! :=
+    }
+decrement_by :=
+
+    { 1 increment_by -> }
+increment :=
+
+    { 1 decrement_by -> }
+decrement :=
+
+    { ?:-> }
+if :=
+
+    { ?! # }
+unassign :=
+
+    {
+        name :=
+        value :=
+        name ? ?! #
+        value ?! name ?! :=
+    }
+overwrite :=
+
+    { A for loop implementation that supports nested for loops 
+        Expects 3 arguments on the stack.
+        1. A condition, either a literal boolean value or a string to evaluate
+        2. The loop increment code
+        3. The loop body
+        The loop body may refer to the "break" function which only exists
+        inside of the loop and forces the loop to stop after this eval of
+        the body. It does not short-circuit the body evaluation. } #
+    {
+        { Arguments } #
+        _for_body :=
+        _for_inc :=
+        _for_cond :=
+        { Local Variables } #
+        true _for_cont :=
+
+            { The break method is only defined inside of a call to for } #
+            { false _for_cont overwrite -> }
+        break :=
+
+            { Internal Tail-Recursion method which does the looping } #
+            {
+                    _for_cond -> _for_cont ? &&
+                    {
+                        _for_body ->
+                        _for_inc ->
+                        _for_loop ->
+                    }
+                    { }
+                ?:->
+            }
+        _for_loop :=
+
+        _for_loop ->
+
+        { Pop Arguments and Local Variables and internal functions } #
+        _for_body unassign ->
+        _for_inc unassign ->
+        _for_cond unassign ->
+        _for_cont unassign ->
+        _for_loop unassign ->
+        break unassign ->
+    }
+for :=
+
+    { Syntactic Sugar for a while loop.
+        Really, it's just a for loop with no increment code
+        Expects 2 arguments:
+        1. The condition
+        2. The loop body } #
+    {
+        _while_body :=
+        { }
+        _while_body ?!
+        for ->
+    }
+while :=
+
+    { Implements a do-while loop.
+        Executes the loop body once before continuing to a normal while loop
+        Expects 2 arguments:
+        1. The loop body
+        2. The condition } #
+    {
+        _do_while_cond :=
+        _do_while_body :=
+
+        { Because they might break during the first run of the body, we have
+            to provide our own break function and check it. } #
+        true _do_while_cont :=
+            { false _do_while_cont overwrite -> }
+        break :=
+
+        _do_while_body ->
+
+        break unassign ->
+            _do_while_cont ?!
+            {
+                _do_while_cond ?!
+                { }
+                _do_while_body ?!
+                for ->
+            }
+            {
+                _do_while_cond unassign ->
+                _do_while_body unassign ->
+            }
+        ?:->
+    }
+do_while :=
+
+    {
+        name :=
+            { name ? ? undef != }
+            { name ? unassign -> }
+        while ->
+        name unassign ->
+    }
+flush_var :=
+
+    {
+        n :=
+        0 i overwrite ->
+            { i ? n ? < }
+            { i increment -> }
+            { list1 := }
+        for ->
+        0 i overwrite ->
+            { i ? n ? < }
+            { i increment -> }
+            { list1 ?! list2 := }
+        for ->
+        0 i overwrite ->
+            { i ? n ? < }
+            { i increment -> }
+            { list2 ?! }
+        for ->
+        i unassign ->
+        n unassign ->
+    }
+reverse_last_n :=
+
+    { Joins the last N tokens into a string, separated by a delimiter
+        Expects 2 arguments:
+        1. The number of tokens to join
+        2. The delimiter value to use. } #
+    {
+        delimiter :=
+        n :=
+        n ? 1 >
+            {
+                last :=
+                prior :=
+                prior ?! delimiter ? last ?! . .
+                n ? 1 - delimiter ? join_last_n ->
+            }
+            { }
+        ?:->
+        n unassign ->
+        delimiter unassign ->
+    }
+join_last_n :=
+
+    {
+        running_total :=
+        $ 2 >=
+            { + }
+            { # 0 }
+        ?:->
+        running_total ?! +
+    }
+process_one_frame :=
+
+    {
+        $ reverse_last_n ->
+        0 { push on the running total } #
+            { $ 1 > }
+            { process_one_frame -> }
+        while ->
+    }
+bowling_score :=
+
+    {
+        0 tests :=
+        0 pass :=
+        0 fail :=
+        error flush_var ->
+    }
+testing_init :=
+
+    {
+        error :=
+        result :=
+        !!
+        tests increment ->
+        result ?!
+            { pass increment -> error unassign -> }
+            { fail increment -> error ?! !! }
+        ?:->
+    }
+test_expectation :=
+
+    {
+        !!
+        fail ? 0 == success :=
+        tests ?! Tests Executed:
+        $ " join_last_n -> !!
+        pass ?! Passed, fail ?! Failed.
+        $ " join_last_n -> !!
+        success ?! SUCCESS FAILED ?: !!
+    }
+testing_results :=
+
+
+testing_init ->
+
+{
+    1 3 bowling_score ->
+    4 == { Error! [1,3]=4 case failed } test_expectation ->
+} ()
+
+{
+    4 5 7
+    bowling_score ->
+    9 == { Error! [4,5,7]=9 case failed (mid frame) } test_expectation ->
+} ()
+
+testing_results ->
+
+</textarea>
+    <br>
+    <input type="button" id=runBtn value="Run"/>
+    <input type="button" id=debugBtn value="Debug"/>
+    <input type="button" id=stepBtn value="Step"/>
+    <input type="button" id=continueBtn value="Continue"/>
+    <h2>Output:</h2>
+    <textarea id=output rows=4 cols=80></textarea>
+    </td><td valign=top>
+    <h2>Instruction Buffer</h2>
+    <textarea id=debug rows=15 cols=80></textarea>
+    <h2>Variables</h2>
+    <textarea id=vars rows=10 cols=80></textarea>
+    </td></tr></table>
 </form>
 </body>
 </html>
