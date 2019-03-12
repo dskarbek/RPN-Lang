@@ -9,12 +9,13 @@ Token | Description
 ---- | -----
 `val` | Any string that does not match an operation is interpreted as a literal value.
 `\val` | A backslash is removed from the start of a constant and the rest of the token is always taken as a constant. Use this to escape an operator to be processed as a constant.
-`#` | Pops an discards the last token on the stack, use along with `{ ... }` to make comments
+`#` | Pops and discards the last token on the stack, use along with `{ ... }` to make comments
 `true` | A boolean true value.
 `false` | A boolean false value. These are the only words that are reserved symbols.
 `undef` | The value a variable has before it is assigned to.
 `"` | Push a single space onto the stack.
 `\n` | Push a new line character onto the stack.
+`{ ... }` | Quotes the enclosed tokens into a single token on the stack. Can be nested.
 
 ## Boolean operators
 Token | Description
@@ -56,9 +57,7 @@ Token | Description
 ---- | -----
 `?:` | Ternary, or if-then-else, operator: "test a b ?:" evals to `a` if `test` is true and to `b` if `test` is false.
 `()` | Pop the top of stack and evaluates it as a RPNLang expression. Typically, the top of stack should be a `{ ... }` quoted expression.
-`?:->` | Does a ternary operator evaluation just like `?:` but then evaluates the result as an RPNLang expression. Good for when you are using the ternary operator for conditional evaluation. Literally equivallent to `?: ()`
-`{ ... }` | Quotes the enclosed tokens into a single token on the stack. Can be nested. This is primarily useful for defining expressions to pass to the eval operator
-`><` | Has no effect on the program, but sets a breakpoint so if the interpreter is running in a debug mode it can choose to stop at this point.
+`<>` | Has no effect on the program, but sets a breakpoint so if the interpreter is running in a debug mode it can choose to stop at this point.
 `!!` | Flushes the stack to output, joins all current values without delimiters and adds a newline to the end. If the stack is empty, does nothing.
 
 ## Variable operators
@@ -67,5 +66,5 @@ Token | Description
 `:=` | This is the variable assignment operator: "5 a :=" sets a to 5. Previously assigned values aren't actually lost, each variable is actually a stack, and this pushes on a new value.
 `?` | Evaluates the top of stack token as a variable name and pushes on its value in its place. This is a "peek" on the variable stack.
 `?!` | Takes the top of stack token as a variable name and un-assigns the last assigned value. The previously assigned value of the variable will now be in place. The value that was un-assigned is pushed onto the stack. Use `#` if you want to ignore it. This is the "pop" of the variable stack.
-`$var` | For any "var" gives the number of values that have been assigned to it. This is the "stack depth" of the variable.
+`?$` | Evaluates the top of stack token as a variable name and pushes on the number of values that have been assigned to it. This is the "stack depth" of the variable.
 `->` | Evaluates the top of stack token as a variable that resolves to a value that is evaluated as an RPNLang expression. Literally equivallent to `? ()`

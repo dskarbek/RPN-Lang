@@ -63,7 +63,14 @@ RPNLang.prototype.step_debug = function() {
 RPNLang.prototype.step_over_debug = function() {
     //put temp breakpoint after this line
     let next_line = this.instruction_buffer.shift();
-    this.instruction_buffer.unshift(["><"]);
+    if (next_line === undefined) {
+        return;
+    }
+    
+    if (! next_line.includes("<>")) {
+       this.instruction_buffer.unshift(["<>"]);
+    }
+    
     this.instruction_buffer.unshift(next_line);
     
     this.continue_debug();
@@ -181,7 +188,7 @@ RPNLang.prototype.apply_token = function(token, quoted) {
     let args = this.popArgs(token);
 
     switch (token) {
-        case "><": breakpoint = true; break;
+        case "<>": breakpoint = true; break;
         case "!!": 
             //flush the stack to output, if there is a stack
             if (this.stack.length > 0) {
@@ -222,23 +229,17 @@ RPNLang.prototype.apply_token = function(token, quoted) {
         case "?" : this.stack.push(this.peek_var(args[0])); break;
         case "?!": this.stack.push(this.pop_var(args[0])); break;
         case "?:": this.stack.push(args[0] == true ? args[1] : args[2]); break;
+        case "?$": this.stack.push(this.var_depth(args[0])); break;
         case "()": injected_tokens = this.tokenize(args[0]); break;
         case "->": injected_tokens = this.tokenize(this.peek_var(args[0])); break;
-        case "?:->": injected_tokens = this.tokenize(args[0] == true ? args[1] : args[2]); break;
         case "#" : break; //pops one value off the stack
 
         default  :
-                //a token starting with $ gets the number of values pushed onto that variable
-                if (String(token).substring(0, 1) == "$") {
-                    token = String(token).substring(1);
-                    this.stack.push(this.var_depth(token));
-                } else {
-                    //trim off any leading backslash used to escape the token
-                    if (String(token).substring(0, 1) == "\\") {
-                            token = String(token).substring(1);
-                    }
-                    this.stack.push(token);
+                //trim off any leading backslash used to escape the token
+                if (String(token).substring(0, 1) == "\\") {
+                        token = String(token).substring(1);
                 }
+                this.stack.push(token);
                 break;
     }
 
@@ -249,9 +250,10 @@ RPNLang.prototype.popArgs = function(token) {
     var args = [];
     
     switch (token) {
+        // Operators that take 3 arguments
     case "?:":
-    case "?:->":
         args.unshift(this.stack.pop());
+        // Operators that take 2 arguments
     case "==":
     case "!=":
     case "<":
@@ -274,11 +276,13 @@ RPNLang.prototype.popArgs = function(token) {
     case ".":
     case ":=":
         args.unshift(this.stack.pop());
+        // Operators that take 1 argument
     case "#":
     case "!":
     case "~":
     case "?":
     case "?!":
+    case "?$":
     case "->":
     case "()":
         args.unshift(this.stack.pop());

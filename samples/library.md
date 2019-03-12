@@ -1,9 +1,19 @@
 Following is a library of general helper methods that my other samples all use
 ```
+{ Syntactic Sugar Methods } #
+
+{ ?: () } if_else :=
+{ { } ?: () } if :=
+{ ?! # } unassign :=
+
 { Variable Manipulation Methods } #
 
-increment_var_by #
-{
+{ increment_var_by #
+    { Overwrites the variable with a new value that is an offset value from the
+        current value.
+        Expects 2 values:
+        1. The variable name
+        2. The amount to add to the variable (can be negative) } #
     value :=
     name :=
     name ? ?! value ?! + name ?! :=
@@ -15,75 +25,66 @@ increment_var_by #
 
 { -1 increment_var_by -> } decrement_var :=
 
-{ ?! # } unassign :=
-
-flush_var #
-{ Removes all assigned values of a variable
-    Takes 1 parameter: the name of the variable } #
-{
+{ flush_var #
+    { Removes all assigned values of a variable
+        Takes 1 parameter: the name of the variable } #
     name :=
     name ? unassign ->
-    name ? ? undef !=
+    if # name ? ?$ 0 >
     {
         name ?! flush_var ->
     }
+    else #
     { 
         name unassign ->
-    } ?:->
+    } if_else ->
 } flush_var :=
 
-overwrite_var #
-{ Assigns a value to a variable overwritting any prior value rather than
-    pushing a new value onto the variable's stack.
-    Expects 2 paramenters: (Same format as the := operator)
-    1. The value to set
-    2. The variable name } #
-{
+{ overwrite_var #
+    { Assigns a value to a variable overwriting any prior value rather than
+        pushing a new value onto the variable's stack.
+        Expects 2 arguments: (Same format as the := operator)
+        1. The value to set
+        2. The variable name } #
     name :=
     value :=
-    name ? ?! #
+    name ? unassign ->
     value ?! name ?! :=
 } overwrite_var :=
 
 
-{ Loop Controls } #
+{ Loop & Branch Controls } #
 
-
-for #
-{ A for loop implementation that supports nested for loops 
-    Expects 3 arguments on the stack.
-    1. A condition, either a literal boolean value or a string to evaluate
-    2. The loop increment_var code
-    3. The loop body
-    The loop body may refer to the "break" function which only exists
-    inside of the loop and forces the loop to stop after this eval of
-    the body. It does not short-circuit the body evaluation. } #
-{
-    { Arguments } #
+{ for #
+    { A for loop implementation that supports nested for loops 
+        Expects 3 arguments on the stack.
+        1. A condition, either a literal boolean value or a string to evaluate
+        2. The loop increment_var code
+        3. The loop body
+        The loop body may refer to the "break" function which only exists
+        inside of the loop and forces the loop to stop after this eval of
+        the body. It does not short-circuit the body evaluation. } #
     _for_body :=
     _for_inc :=
     _for_cond :=
-    { Local Variables } #
-    true _for_cont :=
 
-    break #
     { The break method is only defined inside of a call to for } #
-    { false _for_cont overwrite_var -> } break :=
+    true _for_cont :=
+    { break #
+        false _for_cont overwrite_var ->
+    } break :=
 
-    _for_loop #
     { Internal Tail-Recursion method which does the looping } #
-    {
+    { _for_loop #
         if # _for_cond -> _for_cont ? &&
         {
             _for_body ->
             _for_inc ->
             _for_loop ->
-        }
-        { } ?:->
+        } if ->
     } _for_loop :=
     _for_loop ->
 
-    { Pop Arguments and Local Variables and internal functions } #
     _for_body unassign ->
     _for_inc unassign ->
     _for_cond unassign ->
@@ -92,45 +93,72 @@ for #
     break unassign ->
 } for :=
 
-for_n #
-{ Syntactic sugar for the for loop.
-    Supplies it's own index counter and simply calls the loop body n times.
-    Expects 2 arguments:
-    1. The loop body
-    2. The number of times to execute it } #
-{
-    _for_n :=
+{ for_n #
+    { Syntactic sugar for the for loop.
+        Supplies it's own index counter and simply calls the loop body n times.
+        Expects 2 arguments:
+        1. The number of times to execute it
+        2. The loop body } #
     _for_n_body :=
+    _for_n :=
     0 _for_i :=
-        { _for_i ? _for_n ? < }
-        { _for_i increment_var -> }
-        _for_n_body ?!
+
+    for # { _for_i ? _for_n ? < } { _for_i increment_var -> }
+        _for_n_body ?
     for ->
+
+    _for_n_body unassign ->
     _for_n unassign ->
     _for_i unassign ->
 } for_n :=
 
-while #
-{ Syntactic Sugar for a while loop.
-    Really, it's just a for loop with no increment_var code
-    Expects 2 arguments:
-    1. The condition
-    2. The loop body } #
-{
-    _while_body :=
-    { }   { Add a null increment code block } #
-    _while_body ?!
+{ for_each #
+    { Syntactic sugar for iterating over all assigned values of a variable. Saves
+        the values as it pulls them off the variable and puts them back when it
+        is done.
+        Expects 2 arguments:
+        1. The variable name, which will be useable in the loop body to peek the
+            top value, but should not be popped or assigned to.
+        2. The loop body } #
+    _for_each_body :=
+    _for_each_var :=
+
+    _for_each_var ? ?$ _for_each_n :=
+
+    for_n # _for_each_n ?
+    {
+        _for_each_body ->
+        _for_each_var ?! _for_each_save :=
+    }
+
+    for_n # _for_each_n ?
+    {
+        _for_each_save ?! for_each_var ? :=
+    }
+
+    _for_each_n unassign ->
+    _for_each_var unassign ->
+    _for_each_body unassign ->
+} for_each :=
+
+{ while #
+    { Syntactic Sugar for a while loop.
+        Really, it's just a for loop with no increment_var code
+        Expects 2 arguments:
+        1. The condition
+        2. The loop body } #
+    { Add a null increment code block before the loop body } #
+    loop_body := { } loop_body ?!
     for ->
 } while :=
 
-do_while #
-{ Implements a do-while loop.
-    Executes the loop body once before continuing to a normal while loop
-    Expects 2 arguments:
-    1. The loop body
-    2. The condition 
-    Note that the order is opposite of a while loop, the condition comes second } #
-{
+{ do_while #
+    { Implements a do-while loop.
+        Executes the loop body once before continuing to a normal while loop. Note
+        that the order is opposite of a while loop, the condition comes second.
+        Expects 2 arguments:
+        1. The loop body
+        2. The condition } #
     _do_while_cond :=
     _do_while_body :=
 
@@ -145,76 +173,155 @@ do_while #
 
     if # _do_while_cont ?!
     {
-        _do_while_cond ?!
-        { }
-        _do_while_body ?!
+        for # _do_while_cond ?! { }
+            _do_while_body ?!
         for ->
     }
+    else #
     {
         _do_while_cond unassign ->
         _do_while_body unassign ->
-    } ?:->
+    } if_else ->
 } do_while :=
+
+{ n_if_else_chain #
+    { Syntactic Sugar for forming an if-else chain of arbitrary length.
+        Expects Pairs of booleans and code blocks for the "if" and "else if"'s } #
+    _else_if_num_conditions :=
+    _final_else :=
+    for_n # _else_if_num_conditions ?
+    {
+        _else_if_body :=
+        _else_if_condition :=
+    } for_n ->
+
+    false _else_if_found_winner :=
+
+    for_n # _else_if_num_conditions ?
+    {
+        if # _else_if_found_winner ? ! _else_if_condition ? &&
+        {
+            true _else_if_found_winner overwrite_var ->
+            _else_if_body ->
+        } if ->
+        _else_if_condition unassign ->
+        _else_if_body unassign ->
+    } for_n ->
+
+    if # _else_if_found_winner ? !
+    {
+        _final_else ->
+    } if ->
+
+    _else_if_num_conditions unassign ->
+    _else_if_found_winner unassign ->
+    _final_else unassign ->
+} n_if_else_chain :=
 
 
 { Stack modifying methods } #
 
-reverse_n #
-{ Picks up the last N values from the stack, and puts them back
-    down in reverse order.  Expects 1 argument, the number of items
-    (not counting the argument) to reverse. } #
-{
+{ flush_stack_n #
+    { Remove N elements from the stack.
+        Takes 1 argument, the number to remove (which is not counted as
+        one of the things being removed) } #
+    { # } for_n ->
+} flush_stack_n :=
+
+{ var_to_stack_n #
+    { Dumps N most recent assigned values of variable to the stack. This causes
+        the values to be unassigned from the variable.
+        Expects 2 arguments:
+        1. The variable to dump to stack
+        2. The number of values to extract } #
     n :=
-        { list1 := }
-    n ? for_n ->
-        { list1 ?! list2 := }
-    n ? for_n ->
-        { list2 ?! }
-    n ? for_n ->
+    name :=
+    for_n # n ? {
+        name ? ?!
+    } for_n ->
+    n unassign ->
+    name unassign ->
+} var_to_stack_n :=
+
+{ var_to_stack #
+    { Syntactic sugar for dumping all values of a variable to the stack.
+        Expects 1 argument: The variable to dump } #
+    name :=
+    name ?
+    name ?! ?$
+    var_to_stack_n ->
+} var_to_stack :=
+
+{ stack_n_to_var #
+    { Assigns the N top values from the stack into a variable.
+        Expects 2 arguments:
+        1. The number of values to pick up
+        2. The variable to assign to } #
+    name :=
+    n :=
+    for_n # n ? {
+        name ? :=
+    } for_n ->
+    n unassign ->
+    name unassign ->
+} stack_n_to_var :=
+
+{ reverse_n #
+    { Picks up the last N values from the stack, and puts them back
+        down in reverse order.  Expects 1 argument, the number of items
+        (not counting the argument) to reverse. } #
+    n :=
+
+    n ? list1 stack_n_to_var ->
+    
+    for_n # n ? {
+        list1 ?! list2 :=
+    } for_n ->
+
+    list2 var_to_stack ->
+
     n unassign ->
 } reverse_n :=
 
-duplicate_n #
-{ Duplicates the last N values on the stack.  The list of items is
-    duplicated as a whole "1,2,3,1,2,3" not "1,1,2,2,3,3".
-    Expects 1 argument: 
-    Number of items (not counting the argument) to duplicate } #
-{
+{ duplicate_n #
+    { Duplicates the last N values on the stack.  The list of items is
+        duplicated as a whole "1,2,3,1,2,3" not "1,1,2,2,3,3".
+        Expects 1 argument: 
+        Number of items (not counting the argument) to duplicate } #
     n :=
-        { list := }
-    n ? for_n ->
-        { list ? list ?! save := }
-    n ? for_n ->
-        { save ?! list := }
-    n ? for_n ->
-        { list ?! }
-    n ? for_n ->
+
+    n ? list stack_n_to_var ->
+
+    for_n # n ? {
+        list ? list ?! save :=
+    } for_n ->
+
+    for_n # n ? {
+        save ?! list :=
+    } for_n ->
+
+    list var_to_stack ->
+
     n unassign ->
 } duplicate_n :=
 
-flush_n #
-{ Remove N elements from the stack.
-    Takes 1 argument, the number to remove (which is not counted as
-    one of the things being removed) } #
-{
-    n :=
-    { # } n ?! for_n ->
-} flush_n :=
+{ reverse_var_stack #
+    name :=
+    name ? ?$ count :=
 
-reverse_var_stack #
-{
-
-} reverse_var_stack ->
+    name ? var_to_stack ->
+    count ? reverse_n ->
+    count ?! name ?! stack_n_to_var ->
+} reverse_var_stack :=
 
 
 { String methods } #
 
-string_join #
-{ Joins the last N tokens into a string, separated by a delimiter
-    Expects 2 arguments:
-    1. The number of tokens (not counting the arguments) to join
-    2. The delimiter value to use. } #
-{
+{ string_join #
+    { Joins the last N tokens into a string, separated by a delimiter
+        Expects 2 arguments:
+        1. The number of tokens (not counting the arguments) to join
+        2. The delimiter value to use. } #
     delimiter :=
     n :=
     if # n ? 1 >
@@ -225,8 +332,7 @@ string_join #
         n ? 1 - 
         delimiter ? 
         string_join ->
-    }
-    { } ?:->
+    } if ->
     n unassign ->
     delimiter unassign ->
 } string_join :=
@@ -234,70 +340,79 @@ string_join #
 
 { Unit Testing Framework Methods } #
 
-testing_init #
-{
-    0 tests :=
-    0 pass :=
-    0 fail :=
-} testing_init :=
-
-test_expectation #
-{
+{ test_expectation #
+    { Each test method that will be assigned to test_fn must call this method to
+        register the results of the test. You can manually call this in a code
+        block that you assign to test_fn, or the test function as a short-hand
+        and it will call this for you. } #
     case_label :=
     result :=
     !!
     tests increment_var ->
-    result ?!
-        { pass increment_var -> { [ OK ] } " case_label ?! !! }
-        { fail increment_var -> [FAIL] " case_label ?! !! }
-    ?:->
+    if # result ?!
+    { 
+        pass increment_var ->
+        { [ OK ] } " case_label ?! !!
+    }
+    else #
+    {
+        fail increment_var ->
+        [FAIL] " case_label ?! !!
+    } if_else ->
 } test_expectation :=
 
-testing_results #
-{
-    !!
-    fail ? 0 == success :=
-    tests ?! Tests Executed:
-    $ " string_join -> !!
-    pass ?! Passed, fail ?! Failed.
-    $ " string_join -> !!
-    success ?! SUCCESS FAILED ?: !!
-} testing_results :=
-
-{
+{ drop_test_output #
+    { If your test leaves output on the stack, call this method after you have
+        Computed your true/false test success result.  If will keep the result
+        on the top of the stack and flush the rest of it.  That way your normal
+        output doesn't cloud the test } #
     result :=
-    $ flush_n ->
+    $ flush_stack_n ->
     result ?!
 } drop_test_output :=
 
-run_tests #
-{
-    testing_init ->
+{ register_test #
+    { Creates a test function from a label and a code block that must resolve
+        to a boolean result on the top of the stack that indicates whether the
+        test passed or not. 
+        Expects 2 arguments:
+        1. The label for the test
+        2. The body of the test code } #
+    _test_body :=
+    _test_label :=
+    _test_body ?! 
+    { drop_test_output -> } . \n .
+    \{ . " . _test_label ?! . " . \} . " . { test_expectation -> } .
+    test_fn :=
+} register_test :=
+
+{ run_tests #
+    { Runs a collection of unit-tests stored in the test_fn variable. The tests
+        are expected to call test_expectation internally or else, they won't be
+        counted in the results. Tests are executed in the order they were assigned
+        to test_fn. } #
+    0 tests :=
+    0 pass :=
+    0 fail :=
     
-    $test_fn num_tests :=
-    forEach #
-    {
-        test_fn ?!
-    } num_tests ? for_n ->
+    test_fn reverse_var_stack ->
 
-    num_tests ? reverse_n ->
-
-    forEach #
+    for_n # test_fn ?$
     {
-        test_fn :=
-    } num_tests ? for_n ->
+        test_fn ->
+        test_fn unassign ->
+    } for_n ->
 
-    forEach #
-    {
-        test_fn ?! ()
-    } num_tests ? for_n ->
-    testing_results ->
+    !!
+    tests ?! " Tests " Executed: !!
+    pass ?! " Passed, " fail ?! " Failed. !!
+    fail ? 0 == SUCCESS FAILED ?: !!
 } run_tests :=
 
 
 { Unit Tests of Library Methods } #
 
-test_double_for_loop #
+test # { Double For Loop }
 {
     1 i :=
         { i ? 7 < }
@@ -312,33 +427,28 @@ test_double_for_loop #
                     if # j ? 2 % 0 == 
                     { 
                         break ->
-                    } 
-                    { } ?:->
+                    } if ->
                 }
             for ->
         }
     for ->
     $ 15 == 
     drop_test_output ->
-    { Double For Loop } test_expectation ->
-} test_fn :=
+} register_test ->
 
-test_do_while #
+test # { Do While Loop with break }
 {
+    do # {
+        1 a :=
+        a ? a ?! 1 +
+        if # $ 4 >
         {
-            1
-                a := a ? a ?! 1 +
-                        $ 4 >
-                        { break -> }
-                        { }
-                ?:->
-        }
-        { $ 10 < }
-    do_while ->
+            break ->
+        } if ->
+    } { $ 10 < } do_while ->
     $ 6 == 
     drop_test_output ->
-    { Do While Loop with break } test_expectation ->
-} test_fn :=
+} register_test ->
 
 { Uncomment to run the tests, leave commented if using as library } #
 run_tests ->

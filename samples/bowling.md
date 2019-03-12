@@ -1,161 +1,164 @@
 A Program that calculates the bowling score, given a series of throw values
 ```
-is_spare #
-{
+{ is_a_ten #
     val := 
     val ? 
     val ?! 10 ==
-} is_spare :=
+} is_a_ten :=
 
-add_bonus_pins #
-{
+{ add_bonus_pins #
     pins :=
     frame_score :=
     if # $ pins ? >=
     {
         pins ? duplicate_n ->
         frame_score ?!
-        { + } pins ? for_n ->
+        pins ? { + } for_n ->
     }
     else #
     {
         { frame score is a zero for now } #
         0
         frame_score unassign ->
-    } ?:->
+    } if_else ->
 } add_bonus_pins :=
 
-process_one_frame #
-{
+{ process_one_frame #
     running_total :=
-    if # $ 1 >=
+    if # is_a_ten -> strike #
     {
-        first_throw :=
-        if # first_throw ? 10 ==
+        2 add_bonus_pins ->
+    }
+    else #
+    {
+        if # $ 2 >=
         {
-            first_throw ?!
-            2 add_bonus_pins ->
+            +
+            if # is_a_ten -> spare #
+            {
+                1 add_bonus_pins ->
+            } if ->
         }
         else #
         {
-            first_throw ?!
-            $ 2 >=
-                { + }
-                { # 0 }
-            ?:->
-            if # is_spare ->
-            {
-                1 add_bonus_pins ->
-            }
-            { } ?:->
-        } ?:->
-    }
-    else #
-    { } ?:->
+            # 0
+        } if_else ->
+    } if_else ->
     running_total ?! +
 } process_one_frame :=
 
-bowling_score #
-{
+{ bowling_score #
     $ reverse_n ->
     0 completed_frames :=
     0 { push on the running total } #
-        { $ 1 > }
-        { 
-            process_one_frame ->
-            completed_frames increment_var ->
-            if # completed_frames ? 10 >=
-            {
-                running_total :=
-                # # { shouldn't be more than two extra throws to ignore } #
-                running_total ?!
-                break ->
-            }
-            { } ?:->
-        }
-    while ->
+    while # { $ 1 > }
+    { 
+        process_one_frame ->
+        completed_frames increment_var ->
+        if # completed_frames ? 10 >=
+        {
+            running_total :=
+            # # { shouldn't be more than two extra throws to ignore } #
+            running_total ?!
+            break ->
+        } if ->
+    } while ->
     completed_frames unassign ->
 } bowling_score :=
 
 
 { Unit Tests } #
 
+test # { Single frame }
 {
-    1 3 bowling_score ->
-    4 == { Single frame } test_expectation ->
-} test_fn :=
+    1 3
+    bowling_score ->
+    4 ==
+} register_test ->
 
+test # { Partial frame }
 {
     4 5 7
     bowling_score ->
-    9 == { Partial frame } test_expectation ->
-} test_fn :=
+    9 ==
+} register_test ->
 
+test # { Spare }
 {
     3 7 3
     bowling_score ->
-    13 == { Spare } test_expectation ->
-} test_fn :=
+    13 ==
+} register_test ->
 
+test # { Open Spare }
 {
     3 7
     bowling_score ->
-    0 == { Open Spare } test_expectation ->
-} test_fn :=
+    0 ==
+} register_test ->
 
+test # { Spare and next frame }
 {
     3 7 3 2
     bowling_score ->
-    18 == { Spare and next frame } test_expectation ->
-} test_fn :=
+    18 ==
+} register_test ->
 
+test # { Strike (and frame after) }
 {
     10 3 6
     bowling_score ->
-    28 == { Strike (and frame after) } test_expectation ->
-} test_fn :=
+    28 ==
+} register_test ->
 
+test # { Open Strike 1 }
 {
     10 3 
     bowling_score ->
-    0 == { Open Strike 1 } test_expectation ->
-} test_fn :=
+    0 ==
+} register_test ->
 
+test # { Open Strike 2 }
 {
     10  
     bowling_score ->
-    0 == { Open Strike 2 } test_expectation ->
-} test_fn :=
+    0 ==
+} register_test ->
 
+test # { Perfect Game }
 {
     10 10 10 10 10 10 10 10 10 10 10 10 
     bowling_score ->
-    300 == { Perfect Game } test_expectation ->
-} test_fn :=
+    300 ==
+} register_test ->
 
+test # { Heartbreak Game }
 {
     10 10 10 10 10 10 10 10 10 10 10 9 
     bowling_score ->
-    299 == { Heartbreak Game } test_expectation ->
-} test_fn :=
+    299 ==
+} register_test ->
 
+test # { Tripping at the finish line }
 {
     10 10 10 10 10 10 10 10 10 10 6 3 
     bowling_score ->
-    285 == { Tripping at the finish line } test_expectation ->
-} test_fn :=
+    285 ==
+} register_test ->
 
+test # { Tenth Frame Spare }
 {
     10 10 10 10 10 10 10 10 10 9 1 1 
     bowling_score ->
-    270 == { Tenth Frame Spare } test_expectation ->
-} test_fn :=
+    270 ==
+} register_test ->
 
+test # { Sample Game }
 {
     1 4 4 5 6 4 5 5 10 0 1 7 3 6 4 10 2 8 6
     bowling_score ->
-    133 == { Sample Game } test_expectation ->
-} test_fn :=
+    133 ==
+} register_test ->
 
 run_tests ->
 ```
