@@ -28,15 +28,13 @@ Following is a library of general helper methods that my other samples all use
 { flush_var #
     { Removes all assigned values of a variable
         Takes 1 parameter: the name of the variable } #
-    name :=
-    name ? unassign ->
-    if # name ? ?$ 0 >
+    if # :: ? ?$ 0 >
     {
-        name ?! flush_var ->
+        :: ? unassign ->
+        flush_var ->
     }
-    else #
-    { 
-        name unassign ->
+    {
+        #
     } if_else ->
 } flush_var :=
 
@@ -112,35 +110,6 @@ Following is a library of general helper methods that my other samples all use
     _for_i unassign ->
 } for_n :=
 
-{ for_each #
-    { Syntactic sugar for iterating over all assigned values of a variable. Saves
-        the values as it pulls them off the variable and puts them back when it
-        is done.
-        Expects 2 arguments:
-        1. The variable name, which will be useable in the loop body to peek the
-            top value, but should not be popped or assigned to.
-        2. The loop body } #
-    _for_each_body :=
-    _for_each_var :=
-
-    _for_each_var ? ?$ _for_each_n :=
-
-    for_n # _for_each_n ?
-    {
-        _for_each_body ->
-        _for_each_var ?! _for_each_save :=
-    }
-
-    for_n # _for_each_n ?
-    {
-        _for_each_save ?! for_each_var ? :=
-    }
-
-    _for_each_n unassign ->
-    _for_each_var unassign ->
-    _for_each_body unassign ->
-} for_each :=
-
 { while #
     { Syntactic Sugar for a while loop.
         Really, it's just a for loop with no increment_var code
@@ -184,40 +153,6 @@ Following is a library of general helper methods that my other samples all use
     } if_else ->
 } do_while :=
 
-{ n_if_else_chain #
-    { Syntactic Sugar for forming an if-else chain of arbitrary length.
-        Expects Pairs of booleans and code blocks for the "if" and "else if"'s } #
-    _else_if_num_conditions :=
-    _final_else :=
-    for_n # _else_if_num_conditions ?
-    {
-        _else_if_body :=
-        _else_if_condition :=
-    } for_n ->
-
-    false _else_if_found_winner :=
-
-    for_n # _else_if_num_conditions ?
-    {
-        if # _else_if_found_winner ? ! _else_if_condition ? &&
-        {
-            true _else_if_found_winner overwrite_var ->
-            _else_if_body ->
-        } if ->
-        _else_if_condition unassign ->
-        _else_if_body unassign ->
-    } for_n ->
-
-    if # _else_if_found_winner ? !
-    {
-        _final_else ->
-    } if ->
-
-    _else_if_num_conditions unassign ->
-    _else_if_found_winner unassign ->
-    _final_else unassign ->
-} n_if_else_chain :=
-
 
 { Stack modifying methods } #
 
@@ -246,9 +181,7 @@ Following is a library of general helper methods that my other samples all use
 { var_to_stack #
     { Syntactic sugar for dumping all values of a variable to the stack.
         Expects 1 argument: The variable to dump } #
-    name :=
-    name ?
-    name ?! ?$
+    :: ?$
     var_to_stack_n ->
 } var_to_stack :=
 

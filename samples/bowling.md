@@ -1,11 +1,5 @@
 A Program that calculates the bowling score, given a series of throw values
 ```
-{ is_a_ten #
-    val := 
-    val ? 
-    val ?! 10 ==
-} is_a_ten :=
-
 { add_bonus_pins #
     pins :=
     frame_score :=
@@ -25,7 +19,7 @@ A Program that calculates the bowling score, given a series of throw values
 
 { process_one_frame #
     running_total :=
-    if # is_a_ten -> strike #
+    if # :: 10 ==     strike #
     {
         2 add_bonus_pins ->
     }
@@ -34,7 +28,7 @@ A Program that calculates the bowling score, given a series of throw values
         if # $ 2 >=
         {
             +
-            if # is_a_ten -> spare #
+            if # :: 10 ==      spare #
             {
                 1 add_bonus_pins ->
             } if ->

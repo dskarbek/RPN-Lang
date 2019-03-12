@@ -16,6 +16,7 @@ Token | Description
 `"` | Push a single space onto the stack.
 `\n` | Push a new line character onto the stack.
 `{ ... }` | Quotes the enclosed tokens into a single token on the stack. Can be nested.
+`::` | Clone the top token on the stack.  Useful for when you want to calculate a result based on it but also keep it.
 
 ## Boolean operators
 Token | Description
