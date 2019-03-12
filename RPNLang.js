@@ -60,6 +60,15 @@ RPNLang.prototype.step_debug = function() {
     return ! breakpoint;
 };
 
+RPNLang.prototype.step_over_debug = function() {
+    //put temp breakpoint after this line
+    let next_line = this.instruction_buffer.shift();
+    this.instruction_buffer.unshift(["><"]);
+    this.instruction_buffer.unshift(next_line);
+    
+    this.continue_debug();
+}
+
 RPNLang.prototype.continue_debug = function() {
     while (this.instruction_buffer.length > 0 && this.step_debug()) {
         //the condition is the work.  step_debug does the work and returns

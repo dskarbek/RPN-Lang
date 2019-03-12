@@ -33,6 +33,12 @@
             $('#debug').html(rpn_lang.get_debug_lines());
             $('#vars').html(rpn_lang.get_variables());
         });
+        $('#stepOverBtn').click(function() {
+            rpn_lang.step_over_debug();
+            $('#output').html(rpn_lang.get_stack());
+            $('#debug').html(rpn_lang.get_debug_lines());
+            $('#vars').html(rpn_lang.get_variables());
+        });
         $('#continueBtn').click(function() {
             rpn_lang.continue_debug();
             $('#output').html(rpn_lang.get_stack());
@@ -57,6 +63,7 @@
     <br>
     <input type="button" id=debugBtn value="Start Debug"/>
     <input type="button" id=stepBtn value="Step"/>
+    <input type="button" id=stepOverBtn value="Step Over"/>
     <input type="button" id=continueBtn value="Continue"/>
     <h2>Variables</h2>
     <textarea id=vars rows=10 cols=80></textarea>
