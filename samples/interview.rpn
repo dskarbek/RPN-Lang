@@ -1,11 +1,11 @@
-Some methods that implement questions from "Cracking the Coding Interview". These
+{ Some methods that implement questions from "Cracking the Coding Interview". These
 are not going to be optimal solutions. RPN doesn't have the language features to
 make optimal solutions and the point here is to demonstrate that the language is
-complete enough to solve the problems at all.
+complete enough to solve the problems at all. } #
 
-Determine if a list is all unique values
-```
+
 { is_unique #
+    { Determine if a list is all unique values } #
     sort ->
     true
     for_n # $ 2 -
@@ -75,5 +75,5 @@ test # { Unique Non-numeric List }
     $ 1 == &&
 } register_test ->
 
+<>
 run_tests ->
-```

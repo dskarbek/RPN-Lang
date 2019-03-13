@@ -1,5 +1,5 @@
-A Program that calculates the bowling score, given a series of throw values
-```
+{ A Program that calculates the bowling score, given a series of throw values } #
+
 { add_bonus_pins #
     pins :=
     frame_score :=
@@ -154,5 +154,5 @@ test # { Sample Game }
     133 ==
 } register_test ->
 
+<>
 run_tests ->
-```

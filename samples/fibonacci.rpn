@@ -1,5 +1,5 @@
-A method to print N numbers in the Fibonacci sequence
-```
+{ A method to print N numbers in the Fibonacci sequence } #
+
 { fib #
     _fib_count :=
     if # _fib_count ? 2 >=
@@ -22,5 +22,5 @@ A method to print N numbers in the Fibonacci sequence
     _fib_count unassign ->
 } fib :=
 
+<>
 10 fib ->
-```

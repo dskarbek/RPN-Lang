@@ -1,5 +1,6 @@
-Following is a library of general helper methods that my other samples all use
-```
+{ Following is a library of general helper methods that my other samples all use } #
+
+
 { Syntactic Sugar Methods } #
 
 { ?: () } if_else :=
@@ -495,4 +496,3 @@ test # { operator tests } #
 
 { Uncomment to run the tests, leave commented if using as library } #
 run_tests ->
-```
