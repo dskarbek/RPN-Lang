@@ -1,0 +1,394 @@
+{ Unit Tests of Library Methods } #
+
+test # { Comparator Tests } #
+{
+    { 0 1 < }
+    { 9 10 < }
+    { a b < }
+    { aa ab < }
+    { 0.5 1.5 < }
+    { -1.5 -0.5 < }
+    { 0 1 <= }
+    { 9 10 <= }
+    { a b <= }
+    { aa ab <= }
+    { 0.5 1.5 <= }
+    { -1.5 -0.5 <= }
+    { 1 1 <= }
+    { a a <= }
+    { .5 0.5 <= }
+    { 1 1 == }
+    { a a == }
+    { .5 0.5 == }
+    { 1 2 != }
+    { 9 10 != }
+    { a b != }
+    { .5 -.5 != }
+    { 1 1 >= }
+    { a a >= }
+    { 0.5 .5 >= }
+    { 1 0 >= }
+    { 10 9 >= }
+    { b a >= }
+    { ab aa >= }
+    { 1.5 0.5 >= }
+    { -0.5 -1.5 >= }
+    { 1 0 > }
+    { 10 9 > }
+    { b a > }
+    { ab aa > }
+    { 1.5 0.5 > }
+    { -0.5 -1.5 > }
+
+    test_multiple_expectations ->
+} test_fn :=
+
+test # { Boolean Operators } #
+{
+    { true true == }
+    { false false == }
+    { true false != }
+    { true true && }
+    { true false && ! }
+    { false true && ! }
+    { false false && ! }
+    { true true || }
+    { true false || }
+    { false true || }
+    { false false || ! }
+    { false ! }
+
+    test_multiple_expectations ->
+} test_fn :=
+
+test # { Arithmetic Operators } #
+{
+    { 3 4 + 7 == }
+    { 4 -1 + 3 == }
+    { 4 3 - 1 == }
+    { 3 4 - -1 == }
+    { 3 -1 - 4 == }
+    { 2 3 * 6 == }
+    { 3 1 * 3 == }
+    { 4 .5 * 2 == }
+    { 6 3 / 2 == }
+    { 6 3 \ 2 == }
+    { 7 2 / 3.5 == }
+    { 7 2 \ 3 == }
+    { 6 3 % 0 == }
+    { 7 2 % 1 == }
+
+    test_multiple_expectations ->
+} test_fn :=
+
+test # { Bit-wise Operators } #
+{
+    { 6 5 & 4 == }
+    { 6 5 | 7 == }
+    { 6 10 ^ 12 == }
+    { 7 ~ 15 & 8 == }
+    { 13 1 << 26 == }
+    { 12 1 >> 6 == }
+
+    test_multiple_expectations ->
+} test_fn :=
+
+test # { Other Operators } #
+{
+    { abc def . abcdef == }
+    { true a b ?: a == }
+    { false a b ?: b == }
+    { { 1 1 == } () }
+    { 5 a := a ? 5 == }
+    { a ? 5 == }
+    { a ?$ 1 == }
+    { 6 a := a ?$ 2 == }
+    { a ?! 6 == }
+    { a ?$ 1 == }
+    { a ?! 5 == }
+    { a ?$ 0 == }
+    { a ? undef == }
+
+    test_multiple_expectations ->
+} test_fn :=
+
+test # { Syntactic Sugar } #
+{
+    { 2 true  { 1 + } if -> 3 == }
+    { 2 false { 1 + } if -> 2 == }
+    { 2 1 true  { + } { - } if_else -> 3 == }
+    { 2 1 false { + } { - } if_else -> 1 == }
+    { 5 a := a unassign -> a ? undef == }
+    { 5 a := 6 a := a unassign -> a ? 5 == a unassign -> }
+
+    test_multiple_expectations ->
+} test_fn :=
+
+test # { Variable Manipulations } #
+{
+    { 5 a := a ?$ 1 == }
+    { a 2 increment_var_by -> a ? 7 == }
+    { a ?$ 1 == }
+    { a 2 decrement_var_by -> a ? 5 == }
+    { a ?$ 1 == }
+    { a increment_var -> a ? 6 == }
+    { a ?$ 1 == }
+    { a decrement_var -> a ? 5 == }
+    { a ?$ 1 == }
+    { 10 a overwrite_var -> a ? 10 == }
+    { a ?$ 1 == }
+    { 6 a := 7 a := a ?$ 3 == }
+    { a flush_var -> a ?$ 0 == }
+
+    test_multiple_expectations ->
+} test_fn :=
+
+test # { For Loop }
+{
+    for # 0 i := { i ? 5 < } { i increment_var -> }
+    {
+        i ?
+    } for ->
+
+    0 1 2 3 4
+    5 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { Double For Loop }
+{
+    for # 1 i := { i ? 7 < } { i increment_var -> }
+    { 
+        i ? 10 *
+        for # i ? j := { true } { j increment_var -> }
+        { 
+            j ?
+            if # j ? 2 % 0 == 
+            { 
+                { should only stop the inner for } #
+                stop_looping ->
+            } if ->
+        } for ->
+        j unassign ->
+    } for ->
+    i unassign ->
+    expected #
+    10 1 2 20 2 30 3 4 40 4 50 5 6 60 6
+    15 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { For N Loop }
+{
+    for_n # 3
+    {
+        a
+    } for_n ->
+
+    a a a
+    3 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { While Loop }
+{
+    while # { $ 3 < }
+    {
+        a
+    } while ->
+
+    a a a
+    3 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { While Loop with stop_looping }
+{
+    while # { $ 3 < }
+    {
+        a
+        if # $ 2 ==
+        {
+            stop_looping ->
+        } if ->
+    } while ->
+
+    a a
+    2 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { Do While Loop with stop_looping }
+{
+    1
+    do # {
+        :: 1 +
+        if # $ 4 >
+        {
+            stop_looping ->
+        } if ->
+    } { $ 10 < } do_while ->
+    expected #
+    1 2 3 4 5
+    5 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { Do While Loop with immediate stop_looping }
+{
+    do # {
+        1 2 3
+        stop_looping ->
+    } { $ 10 < } do_while ->
+    expected #
+    1 2 3
+    3 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { flush_stack_n } #
+{
+    1 2 3
+    $ flush_stack_n ->
+    $ 0 == { flush_stack_n full stack } test_expectation ->
+
+    1 2 3
+    2 flush_stack_n ->
+    1
+    1 check_stack_is_matching_lists ->
+    { flush_stack_n partial } test_expectation ->
+} test_fn :=
+
+test # { Stack to/from Var } #
+{
+    1 2 3
+    $ list stack_n_to_var ->
+    $ 0 == list ?$ 3 == && list ? 1 == &&
+    { stack_n_to_var } test_expectation ->
+
+    list var_to_stack ->
+    1 2 3
+    3 check_stack_is_matching_lists ->
+    list ?$ 0 == &&
+    { var_to_stack } test_expectation ->
+
+    1 2 3 $ list stack_n_to_var ->
+    list 2 var_to_stack_n ->
+    1 2
+    2 check_stack_is_matching_lists ->
+    list ?$ 1 == && list ?! 3 == &&
+    { var_to_stack_n } test_expectation ->
+} test_fn :=
+
+test # { reverse full stack }
+{
+    1 2 3    $ reverse_n ->
+    3 2 1    3 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { reverse partial stack }
+{
+    1 2 3 4    3 reverse_n ->
+    1 4 3 2    4 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { duplicate_n }
+{
+    a b c d 1 2 3
+    5 duplicate_n ->
+    a b c d 1 2 3 c d 1 2 3
+    12 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { reverse_var_stack }
+{
+    a list :=
+    b list :=
+    c list :=
+    { list is c,b,a because it's a stack } #
+    list reverse_var_stack ->
+    list var_to_stack ->
+    a b c
+    3 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { sort }
+{
+    3 8 4 7 5 6
+    sort ->
+    3 4 5 6 7 8
+    6 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { sort_n }
+{
+    3 8 4 7 5 6
+    3 sort_n ->
+    3 8 4 5 6 7
+    6 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { sort reverse }
+{
+    3 8 4 7 5 6
+    $ { > } sort_n_by_fn ->
+    8 7 6 5 4 3
+    6 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { sort reverse partial }
+{
+    3 8 4 7 5 6
+    3 { > } sort_n_by_fn ->
+    3 8 4 7 6 5
+    6 check_stack_is_matching_lists ->
+} register_test ->
+
+test # { sort evens and odds }
+{
+    3 8 4 7 5 6
+    sort # $
+    {
+        a := 
+        2 % 
+        a ?! 2 %
+        <
+    } sort_n_by_fn ->
+    { ordering of matching elements is not guaranteed, so all we can claim now
+        is that all evens come before all odds } # 
+    3 odds stack_n_to_var ->
+    3 evens stack_n_to_var ->
+    true
+    for # 3
+    {
+        evens ?! 2 % 0 == &&
+    } for_n ->
+    for # 3
+    {
+        odds ?! 2 % 1 == &&
+    } for_n ->
+    $ 1 == &&
+} register_test ->
+
+test # { Stack Contains empty stack }
+{
+    foo stack_contains -> !
+    $ 1 == &&
+} register_test ->
+
+test # { Stack Contains success }
+{
+    foo bar baz
+    foo stack_contains ->
+    $ 4 == &&
+} register_test ->
+
+test # { Stack Contains not present }
+{
+    foo bar baz
+    zip stack_contains -> !
+    $ 4 == &&
+} register_test ->
+
+test # { string_join }
+{
+    a b c
+    $ \- string_join ->
+    a-b-c ==
+} register_test ->
+
+{ Uncomment to run the tests, leave commented if using as library } #
+run_tests ->

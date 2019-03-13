@@ -29,9 +29,9 @@
 { flush_var #
     { Removes all assigned values of a variable
         Takes 1 parameter: the name of the variable } #
-    if # :: ? ?$ 0 >
+    if # :: ?$ 0 >
     {
-        :: ? unassign ->
+        :: unassign ->
         flush_var ->
     }
     {
@@ -60,18 +60,18 @@
         1. A condition, either a literal boolean value or a string to evaluate
         2. The loop increment_var code
         3. The loop body
-        The loop body may refer to the "break" function which only exists
+        The loop body may refer to the "stop_looping" function which only exists
         inside of the loop and forces the loop to stop after this eval of
         the body. It does not short-circuit the body evaluation. } #
     _for_body :=
     _for_inc :=
     _for_cond :=
 
-    { The break method is only defined inside of a call to for } #
+    { The stop_looping method is only defined inside of a call to for } #
     true _for_cont :=
-    { break #
+    { stop_looping #
         false _for_cont overwrite_var ->
-    } break :=
+    } stop_looping :=
 
     { Internal Tail-Recursion method which does the looping } #
     { _for_loop #
@@ -89,7 +89,7 @@
     _for_cond unassign ->
     _for_cont unassign ->
     _for_loop unassign ->
-    break unassign ->
+    stop_looping unassign ->
 } for :=
 
 { for_n #
@@ -132,14 +132,14 @@
     _do_while_cond :=
     _do_while_body :=
 
-    { Because they might break during the first run of the body, we have
-        to provide our own break function and check it. } #
+    { Because they might call stop_looping during the first run of the body, we
+        have to provide our own stop_looping function and check it. } #
     true _do_while_cont :=
-    { false _do_while_cont overwrite_var -> } break :=
+    { false _do_while_cont overwrite_var -> } stop_looping :=
 
     _do_while_body ->
 
-    break unassign ->
+    stop_looping unassign ->
 
     if # _do_while_cont ?!
     {
@@ -239,6 +239,15 @@
     n unassign ->
 } duplicate_n :=
 
+{ reverse_var_stack #
+    name :=
+    name ? ?$ count :=
+
+    name ? var_to_stack ->
+    count ? reverse_n ->
+    count ?! name ?! stack_n_to_var ->
+} reverse_var_stack :=
+
 { sort_n_by_fn #
     sort_fn :=
     n :=
@@ -306,22 +315,14 @@
         }
         else #
         {
-            break;
-        }
+            true found overwrite_var ->
+            stop_looping ->
+        } if_else ->
     } for_n ->
     temp n ? var_to_stack_n ->
     found ?!
     target unassign ->
 } stack_contains :=
-
-{ reverse_var_stack #
-    name :=
-    name ? ?$ count :=
-
-    name ? var_to_stack ->
-    count ? reverse_n ->
-    count ?! name ?! stack_n_to_var ->
-} reverse_var_stack :=
 
 
 { String methods } #
@@ -369,6 +370,15 @@
         [FAIL] " case_label ?! !!
     } if_else ->
 } test_expectation :=
+
+{ test_multiple_expectations #
+    $ n :=
+    n ? test_cases stack_n_to_var ->
+    for_n # n ?!
+    {
+        test_cases -> test_cases ?! test_expectation ->
+    } for_n ->
+} test_multiple_expectations :=
 
 { drop_test_output #
     { If your test leaves output on the stack, call this method after you have
@@ -428,71 +438,6 @@
 
     !!
     tests ?! " Tests " Executed: !!
-    pass ?! " Passed, " fail ?! " Failed. !!
-    fail ? 0 == SUCCESS FAILED ?: !!
+    pass ?! " Passed, " fail ? " Failed. !!
+    fail ?! 0 == SUCCESS FAILED ?: !!
 } run_tests :=
-
-
-{ Unit Tests of Library Methods } #
-
-test # { Double For Loop }
-{
-    1 i :=
-        { i ? 7 < }
-        { i increment_var -> }
-        { 
-            i ? 10 *
-            i ? j :=
-                true 
-                { j increment_var -> }
-                { 
-                    j ?
-                    if # j ? 2 % 0 == 
-                    { 
-                        break ->
-                    } if ->
-                }
-            for ->
-        }
-    for ->
-    expected #
-    10 1 2 20 2 30 3 4 40 4 50 5 6 60 6
-    15 check_stack_is_matching_lists ->
-} register_test ->
-
-test # { Do While Loop with break }
-{
-    do # {
-        1 a :=
-        a ? a ?! 1 +
-        if # $ 4 >
-        {
-            break ->
-        } if ->
-    } { $ 10 < } do_while ->
-    expected #
-    1 2 1 2 1 2
-    6 check_stack_is_matching_lists ->
-} register_test ->
-
-test # { operator tests } #
-{
-    { 0 1 < }
-    { 1 0 < ! }
-    { 9 10 < }
-    { 10 11 < }
-    { a b < }
-    { b a < ! }
-    { aa ab < }
-    { 0.5 1.5 < }
-    { -1.5 -0.5 < }
-
-    $ test_cases stack_n_to_var ->
-    for_n # test_cases ?$
-    { 
-    test_cases -> test_cases ?! test_expectation ->
-    } for_n ->
-} test_fn :=
-
-{ Uncomment to run the tests, leave commented if using as library } #
-run_tests ->

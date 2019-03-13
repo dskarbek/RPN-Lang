@@ -204,8 +204,8 @@ RPNLang.prototype.apply_token = function(token, quoted) {
         case "$" : this.stack.push(this.stack.length); break;
         case "{" : this.stack.push(""); quoted = 1; break;
         case "::": this.stack.push(args[0]); this.stack.push(args[0]); break;
-        case "==": this.stack.push(args[0] == args[1]); break;
-        case "!=": this.stack.push(args[0] != args[1]); break;
+        case "==": this.stack.push(maybeNumber(args[0]) == maybeNumber(args[1])); break;
+        case "!=": this.stack.push(maybeNumber(args[0]) != maybeNumber(args[1])); break;
         case "<" : this.stack.push(maybeNumber(args[0]) <  maybeNumber(args[1])); break;
         case ">" : this.stack.push(maybeNumber(args[0]) >  maybeNumber(args[1])); break;
         case "<=": this.stack.push(maybeNumber(args[0]) <= maybeNumber(args[1])); break;

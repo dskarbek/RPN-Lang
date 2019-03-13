@@ -54,7 +54,7 @@
             running_total :=
             # # { shouldn't be more than two extra throws to ignore } #
             running_total ?!
-            break ->
+            stop_looping ->
         } if ->
     } while ->
     completed_frames unassign ->

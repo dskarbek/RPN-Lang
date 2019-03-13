@@ -17,6 +17,7 @@ Token | Description
 `\n` | Push a new line character onto the stack.
 `{ ... }` | Quotes the enclosed tokens into a single token on the stack. Can be nested.
 `::` | Clone the top token on the stack.  Useful for when you want to calculate a result based on it but also keep it.
+`$` | Pushes the current stack size (prior to pushing) onto the stack.
 
 ## Boolean operators
 Token | Description
@@ -46,7 +47,6 @@ Token | Description
 `~` | Pop one value and push the bit-wise NOT of it
 `<<` | Pop two values and use the top one to shift the second one left (increase value).
 `>>` | Pop two values and use the top one to shift the second one right (decrease value).
-`$` | Pushes the current stack size (prior to pushing) onto the stack.
 
 ## String operators
 Token | Description

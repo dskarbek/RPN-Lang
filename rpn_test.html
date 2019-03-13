@@ -13,37 +13,41 @@
 
     var rpn_lang = new RPNLang();
 
+    function updateRunView() {
+        $('#output').html(rpn_lang.get_stack())
+            .scrollTop($('#output')[0].scrollHeight);
+        $('#debug').html("");
+        $('#vars').html("");
+    }
+    
+    function updateDebugView() {
+        updateRunView();
+        $('#debug').html(rpn_lang.get_debug_lines());
+        $('#vars').html(rpn_lang.get_variables());        
+    }
+
     jQuery(function() {
         $('#runBtn').click(function() {
             rpn_lang.reset();
             rpn_lang.evaluate($('#input').val())
-            $('#output').html(rpn_lang.get_stack());
-            $('#debug').html("");
-            $('#vars').html("");
+            updateRunView();
         });
         $('#debugBtn').click(function() {
             rpn_lang.reset();
             rpn_lang.start_debug($('#input').val());
-            $('#debug').html(rpn_lang.get_debug_lines());
-            $('#vars').html(rpn_lang.get_variables());
+            updateDebugView();
         });
         $('#stepBtn').click(function() {
             rpn_lang.step_debug();
-            $('#output').html(rpn_lang.get_stack());
-            $('#debug').html(rpn_lang.get_debug_lines());
-            $('#vars').html(rpn_lang.get_variables());
+            updateDebugView();
         });
         $('#stepOverBtn').click(function() {
             rpn_lang.step_over_debug();
-            $('#output').html(rpn_lang.get_stack());
-            $('#debug').html(rpn_lang.get_debug_lines());
-            $('#vars').html(rpn_lang.get_variables());
+            updateDebugView();
         });
         $('#continueBtn').click(function() {
             rpn_lang.continue_debug();
-            $('#output').html(rpn_lang.get_stack());
-            $('#debug').html(rpn_lang.get_debug_lines());
-            $('#vars').html(rpn_lang.get_variables());
+            updateDebugView();
         });
     });
 </script>
