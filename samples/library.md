@@ -238,6 +238,59 @@ Following is a library of general helper methods that my other samples all use
     n unassign ->
 } duplicate_n :=
 
+{ sort_n_by_fn #
+    sort_fn :=
+    n :=
+
+    if # n ? 2 >=
+    {
+        { partition stack by a pivot value } #
+        pivot :=
+        0 num_before :=
+        0 num_after :=
+        for-n # n ? 1 -
+        {
+            if # :: pivot ? sort_fn ->
+            {
+                num_before increment_var ->
+                before :=
+            }
+            else #
+            {
+                num_after increment_var ->
+                after :=
+            } if_else ->
+        } for_n ->
+        before num_before ? var_to_stack_n ->
+        pivot ?
+        after num_after ? var_to_stack_n ->
+
+        { recursively sort the last part } #
+        num_after ? sort_fn ? sort_n_by_fn ->
+
+        { save off the now sorted tail, including the pivot,
+          so that the first part is exposed } #
+        num_after ? 1 + sorted stack_n_to_var ->
+
+        { recursively sort the first part } #
+        num_before ? sort_fn ? sort_n_by_fn ->
+
+        { put back the sorted part to complete the operation } #
+        sorted num_after ? 1 + var_to_stack_n ->
+
+        pivot unassign ->
+        num_before unassign ->
+        num_after unassign ->
+    } if ->
+    { else, if n is less than 2, then it is already sorted } #
+
+    n unassign ->
+    sort_fn unassign ->
+} sort_n_by_fn :=
+
+{ { < } sort_n_by_fn -> } sort_n :=
+{ $ { < } sort_n_by_fn -> } sort :=
+
 { reverse_var_stack #
     name :=
     name ? ?$ count :=
