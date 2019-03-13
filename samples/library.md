@@ -357,6 +357,20 @@ Following is a library of general helper methods that my other samples all use
     result ?!
 } drop_test_output :=
 
+{ check_stack_is_matching_lists #
+    { This method is useful in tests for checking the results of a method that
+        resolves to a list of values.
+        Expects n + 1 values, the n list values and then the value of n } #
+    n :=
+    n ? expected stack_n_to_var ->
+    n ? actual stack_n_to_var ->
+    true
+    for_n # n ?!
+    {
+        expected ?! actual ?! == &&
+    } for_n ->
+} check_stack_is_matching_lists :=
+
 { register_test #
     { Creates a test function from a label and a code block that must resolve
         to a boolean result on the top of the stack that indicates whether the
@@ -418,8 +432,9 @@ test # { Double For Loop }
             for ->
         }
     for ->
-    $ 15 == 
-    drop_test_output ->
+    expected #
+    10 1 2 20 2 30 3 4 40 4 50 5 6 60 6
+    15 check_stack_is_matching_lists ->
 } register_test ->
 
 test # { Do While Loop with break }
@@ -432,8 +447,9 @@ test # { Do While Loop with break }
             break ->
         } if ->
     } { $ 10 < } do_while ->
-    $ 6 == 
-    drop_test_output ->
+    expected #
+    1 2 1 2 1 2
+    6 check_stack_is_matching_lists ->
 } register_test ->
 
 { Uncomment to run the tests, leave commented if using as library } #
