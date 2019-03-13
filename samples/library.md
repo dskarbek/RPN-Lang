@@ -291,6 +291,28 @@ Following is a library of general helper methods that my other samples all use
 { { < } sort_n_by_fn -> } sort_n :=
 { $ { < } sort_n_by_fn -> } sort :=
 
+{ stack_contains #
+    { Is the item on the top of the stack anywhere else in the stack? } #
+    target :=
+    false found :=
+    0 n :=
+    for_n # $
+    {
+        if # :: target ? !=
+        {
+            temp :=
+            n increment_var ->
+        }
+        else #
+        {
+            break;
+        }
+    } for_n ->
+    temp n ? var_to_stack_n ->
+    found ?!
+    target unassign ->
+} stack_contains :=
+
 { reverse_var_stack #
     name :=
     name ? ?$ count :=
@@ -451,6 +473,25 @@ test # { Do While Loop with break }
     1 2 1 2 1 2
     6 check_stack_is_matching_lists ->
 } register_test ->
+
+test # { operator tests } #
+{
+    { 0 1 < }
+    { 1 0 < ! }
+    { 9 10 < }
+    { 10 11 < }
+    { a b < }
+    { b a < ! }
+    { aa ab < }
+    { 0.5 1.5 < }
+    { -1.5 -0.5 < }
+
+    $ test_cases stack_n_to_var ->
+    for_n # test_cases ?$
+    { 
+    test_cases -> test_cases ?! test_expectation ->
+    } for_n ->
+} test_fn :=
 
 { Uncomment to run the tests, leave commented if using as library } #
 run_tests ->

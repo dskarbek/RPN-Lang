@@ -206,10 +206,10 @@ RPNLang.prototype.apply_token = function(token, quoted) {
         case "::": this.stack.push(args[0]); this.stack.push(args[0]); break;
         case "==": this.stack.push(args[0] == args[1]); break;
         case "!=": this.stack.push(args[0] != args[1]); break;
-        case "<" : this.stack.push(args[0]*1 <  args[1]*1); break;
-        case ">" : this.stack.push(args[0]*1 >  args[1]*1); break;
-        case "<=": this.stack.push(args[0]*1 <= args[1]*1); break;
-        case ">=": this.stack.push(args[0]*1 >= args[1]*1); break;
+        case "<" : this.stack.push(maybeNumber(args[0]) <  maybeNumber(args[1])); break;
+        case ">" : this.stack.push(maybeNumber(args[0]) >  maybeNumber(args[1])); break;
+        case "<=": this.stack.push(maybeNumber(args[0]) <= maybeNumber(args[1])); break;
+        case ">=": this.stack.push(maybeNumber(args[0]) >= maybeNumber(args[1])); break;
         case "||": this.stack.push(!!args[0] || !!args[1]); break;
         case "&&": this.stack.push(!!args[0] && !!args[1]); break;
         case "!" : this.stack.push( ! args[0] ); break;
@@ -246,6 +246,13 @@ RPNLang.prototype.apply_token = function(token, quoted) {
 
     return [quoted, breakpoint, injected_tokens];
 };
+
+function maybeNumber(arg) {
+    if (Number(parseFloat(arg)) == arg) {
+        return Number(parseFloat(arg));
+    }
+    return arg;
+}
 
 RPNLang.prototype.popArgs = function(token) {
     var args = [];

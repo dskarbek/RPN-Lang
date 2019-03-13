@@ -1,0 +1,79 @@
+Some methods that implement questions from "Cracking the Coding Interview". These
+are not going to be optimal solutions. RPN doesn't have the language features to
+make optimal solutions and the point here is to demonstrate that the language is
+complete enough to solve the problems at all.
+
+Determine if a list is all unique values
+```
+{ is_unique #
+    sort ->
+    true
+    for_n # $ 2 -
+    {
+        running_result :=
+        last :=
+        :: last ?! !=
+        running_result ?! &&
+    } for_n -> <>
+    running_result :=
+    #
+    running_result ?!
+} is_unique :=
+
+test # { Empty List }
+{
+    is_unique ->
+    $ 1 == &&
+} register_test ->
+
+test # { Singleton List }
+{
+    1
+    is_unique ->
+    $ 1 == &&
+} register_test ->
+
+test # { Unique Pair List }
+{
+    1 2
+    is_unique ->
+    $ 1 == &&
+} register_test ->
+
+test # { Matching Pair List }
+{
+    1 1
+    is_unique -> !
+    $ 1 == &&
+} register_test ->
+
+test # { Unique List }
+{
+    2 4 1 3
+    is_unique ->
+    $ 1 == &&
+} register_test ->
+
+test # { Non-unique List }
+{
+    4 1 2 1 3
+    is_unique -> !
+    $ 1 == &&
+} register_test ->
+
+test # { Non-numeric List }
+{
+    a b a
+    is_unique -> !
+    $ 1 == &&
+} register_test ->
+
+test # { Unique Non-numeric List }
+{
+    a b c
+    is_unique ->
+    $ 1 == &&
+} register_test ->
+
+run_tests ->
+```
