@@ -389,4 +389,15 @@ test # { array_slice from end with negative length }
     $ 1 == &&
 } register_test ->
 
+test # { array_for_each }
+{
+    a b c  $ arr array_init ->
+    for_each # elem in # arr
+    {
+        elem ?
+    } array_for_each ->
+    a b c
+    3 check_stack_is_matching_lists ->
+} register_test ->
+
 run_tests ->

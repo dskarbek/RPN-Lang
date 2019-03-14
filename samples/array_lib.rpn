@@ -450,6 +450,34 @@
     name unassign ->
 } array_slice :=
 
+{ { FOR EACH
+    Runs a block of code against each element of the array. Supports the
+    'stop_looping' command within the code block just like the 'for' method which
+    causes the 'for each' to stop after this iteration.
+    Expects 3 arguments:
+    1: the name of the variable to set each element into for use in the code block
+    2: the array to iterate over
+    3: the code block to execute on each element } #
+    code_block :=
+    name :=
+    var_name :=
+
+    name ? array_size -> n :=
+    for # 0 i := { i ? n ? < } { i increment_var -> }
+    {
+        name ? ? var_name ? :=
+        code_block ->
+        var_name ? unassign ->
+        name ? _array_shift_to_temp ->
+    } for ->
+
+    i ?! name ? _array_shift_n_from_temp ->
+
+    code_block unassign ->
+    var_name unassign ->
+    name unassign ->
+} array_for_each :=
+
 { Helper methods
     These are internal to the lib and assume that the variable 'name' holds the
     name of the array variable. } #
