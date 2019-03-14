@@ -3,10 +3,11 @@
 
 test # { array_size }
 {
-    a b c
-    $ array array_init ->
-    array array_size ->
-    3 ==
+    a b c  $ arr array_init ->
+    arr array_size -> 3 ==
+    arr array_unassign ->
+    arr array_size -> 0 == &&
+    $ 1 == &&
 } register_test ->
 
 test # { array_get 0 }
@@ -400,6 +401,21 @@ test # { array_for_each }
     3 check_stack_is_matching_lists ->
 } register_test ->
 
+test # { array_for_each modifying }
+{
+    1 2 3  $ arr array_init ->
+    2 2 6  $ expected array_init ->
+    for_each # elem in # arr
+    {
+        if # elem ? 2 % 1 ==
+        {
+            elem ? 2 * arr array_set_current ->
+        } if ->
+    } array_for_each ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
 test # { array_sort alpha }
 {
     c a b  $ arr array_init ->
@@ -425,6 +441,60 @@ test # { array_sort reverse }
     { > } arr array_sort_by_fn ->
     arr expected array_equal ->
     $ 1 == &&
+} register_test ->
+
+test # { array_remove_at first }
+{
+    1 2 3  $ arr array_init ->
+    2 3    $ expected array_init ->
+    0 arr array_remove_at ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_remove_at middle }
+{
+    1 2 3  $ arr array_init ->
+    1 3    $ expected array_init ->
+    1 arr array_remove_at ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_remove_at last }
+{
+    1 2 3  $ arr array_init ->
+    1 2    $ expected array_init ->
+    2 arr array_remove_at ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_remove_at too low }
+{
+    1 2 3  $ arr array_init ->
+    1 2 3  $ expected array_init ->
+    -1 arr array_remove_at ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_remove_at too high }
+{
+    1 2 3  $ arr array_init ->
+    1 2 3  $ expected array_init ->
+    4 arr array_remove_at ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_remove_all }
+{
+    a b a c a  $ arr array_init ->
+    b c   $ expected array_init ->
+    a arr array_remove_all ->
+    arr expected array_equal ->
+    $ 1 == &&    
 } register_test ->
 
 run_tests ->

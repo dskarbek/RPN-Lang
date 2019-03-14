@@ -16,6 +16,11 @@
     stack_n_to_var ->
 } array_init :=
 
+{ { UNASSIGN / FREE / DELETE
+    Unassign the array. Expects 1 argument: the array to delete } #
+    flush_var ->
+} array_unassign :=
+
 { { CLONE
     Create a new array variable from an existing array variable.
     Expects 2 arguments:
@@ -119,6 +124,54 @@
     i unassign ->
     name unassign ->
 } array_set :=
+
+{ { REMOVE INDEX
+    Removes the element at the specified index.
+    Expects 2 arguments:
+    1: the index to remove
+    2: the array to remove from } #
+    name :=
+    i :=
+    
+    if # i ? name ? _array_bounds_check ->
+    {
+        i ? name ? _array_shift_n_to_temp ->
+        name ? unassign ->
+        i ? name ? _array_shift_n_from_temp ->
+    } if ->
+
+    name unassign ->
+    i unassign ->
+} array_remove_at :=
+
+{ { REMOVE ITEM
+    Removes all instances of a given element from the array.
+    Expects 2 arguments:
+    1: the value to remove
+    2: the array to remove from } #
+    name :=
+    val :=
+    0 num_remaining :=
+
+    while # { name ? ?$ 0 > }
+    {
+        if # name ? ? val ? ==
+        {
+            name ? unassign ->
+        }
+        else #
+        {
+            num_remaining increment ->
+            name ? _array_shift_to_temp ->
+        } if_else ->
+    } while ->
+
+    num_remaining ? name ? _array_shift_n_from_temp ->
+
+    num_remaining unassign ->
+    val unassign ->
+    name unassign ->
+} array_remove_all :=
 
 { { APPEND
     Adds a single value to the end of the array
@@ -477,6 +530,16 @@
     var_name unassign ->
     name unassign ->
 } array_for_each :=
+
+{ { SET CURRENT
+    Modifies the current element.  The "current" element is the first one unless a
+    modification is in progress, then it is the one that has been passed to the
+    for-each call back code.
+    Expects 2 arguments:
+    1: the new value to set
+    2: the array to set it in } #
+    overwrite ->
+} array_set_current :=
 
 { { SORT
     Sorts the array. Expects 1 argument: the array to sort } #
