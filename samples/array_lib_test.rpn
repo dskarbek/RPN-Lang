@@ -1,0 +1,392 @@
+{ uses library.rpn } #
+{ uses array_lib.rpn } #
+
+test # { array_size }
+{
+    a b c
+    $ array array_init ->
+    array array_size ->
+    3 ==
+} register_test ->
+
+test # { array_get 0 }
+{
+    a b c
+    $ array array_init ->
+    0 array array_get ->
+    a ==
+    array ?$ 3 == &&
+} register_test ->
+
+test # { array_get end }
+{
+    a b c
+    $ array array_init ->
+    2 array array_get ->
+    c ==
+    array ?$ 3 == &&
+} register_test ->
+
+test # { array_get off-end }
+{
+    a b c
+    $ array array_init ->
+    3 array array_get ->
+    undef ==
+    array ?$ 3 == &&
+} register_test ->
+
+test # { array_get random access }
+{
+    a b c
+    $ array array_init ->
+    3 array array_get -> undef ==
+    2 array array_get -> c == &&
+    0 array array_get -> a == &&
+    1 array array_get -> b == &&
+} register_test ->
+
+test # { array_get way off end }
+{
+    a b c
+    $ array array_init ->
+    50 array array_get ->
+    undef ==
+    array ?$ 3 == &&
+} register_test ->
+
+test # { array_equal different sizes }
+{
+    a b c  $ arr1 array_init ->
+    a b    $ arr2 array_init ->
+    arr1 arr2 array_equal -> !
+    arr1 array_size -> 3 == &&
+    arr2 array_size -> 2 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_equal success }
+{
+    a b c  $ arr1 array_init ->
+    a b c  $ arr2 array_init ->
+    arr1 arr2 array_equal ->
+    arr1 array_size -> 3 == &&
+    arr2 array_size -> 3 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_equal different content }
+{
+    a b c  $ arr1 array_init ->
+    a d c  $ arr2 array_init ->
+    arr1 arr2 array_equal -> !
+    arr1 array_size -> 3 == &&
+    arr2 array_size -> 3 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_clone }
+{
+    d e f  $ arr2 array_init -> { just to make sure clone wipes out the variable } #
+    a b c  $ arr1 array_init ->
+    arr1 arr2 array_clone ->
+    arr1 array_size -> 3 ==
+    arr2 array_size -> 3 == &&
+    arr1 arr2 array_equal -> &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_set }
+{
+    a b c  $ arr array_init ->
+    d 1 arr array_set ->
+    a d c  $ expected array_init ->
+    1 arr array_get -> d ==
+    arr expected array_equal -> &&
+    arr array_size -> 3 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_set beyond end }
+{
+    a b c  $ arr array_init ->
+    d 4 arr array_set ->
+    a b c undef d   $ expected array_init ->
+    4 arr array_get -> d ==
+    arr expected array_equal -> &&
+    arr array_size -> 5 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_set before start }
+{
+    a b c  $ arr array_init ->
+    d -1 arr array_set ->
+    a b c  $ expected array_init ->
+    -1 arr array_get -> undef ==
+    arr expected array_equal -> &&
+    arr array_size -> 3 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_append }
+{
+    a b c  $ arr array_init ->
+    d arr array_append ->
+    a b c d $ expected array_init ->
+    3 arr array_get -> d ==
+    arr expected array_equal -> &&
+    arr array_size -> 4 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_append to empty }
+{
+    0 arr array_init ->
+    foo arr array_append ->
+    arr array_size -> 1 ==
+    0 arr array_get -> foo == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_append_n }
+{
+    a b c  $ arr array_init ->
+    a b c d e f  $ expected array_init ->
+    d e f  $ arr array_append_n ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_append_n }
+{
+    a b c  $ arr1 array_init ->
+    d e f  $ arr2 array_init ->
+    a b c d e f  $ expected array_init ->
+    arr2 arr1 array_append_array ->
+    arr1 expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_peekers }
+{
+    a b c   $ arr array_init ->
+    arr array_first -> a ==
+    arr array_last -> c == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_shift }
+{
+    a b c  $ arr array_init ->
+    arr array_shift -> a ==
+    arr array_size -> 2 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_unshift }
+{
+    a b c  $ arr array_init ->
+    0 a b c  $ expected array_init ->
+    0 arr array_unshift -> 
+    arr expected array_equal ->
+    arr array_size -> 4 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_push }
+{
+    a b c  $ arr array_init ->
+    a b c d $ expected array_init ->
+    d arr array_push ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_pop }
+{
+    a b c  $ arr array_init ->
+    a b    $ expected array_init ->
+    arr array_pop -> c ==
+    arr expected array_equal -> &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_insert }
+{
+    a b c   $ arr array_init ->
+    a b d c $ expected array_init ->
+    d 2 arr array_insert ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_insert_n }
+{
+    a b c   $ arr array_init ->
+    a b d e f c $ expected array_init ->
+    d e f 3 2 arr array_insert_n ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_truncate }
+{
+    a b c  $ arr array_init ->
+    a b    $ expected array_init ->
+    2 arr array_truncate ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_truncate zero }
+{
+    a b c  $ arr array_init ->
+    0 expected array_init ->
+    0 arr array_truncate ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_truncate large }
+{
+    a b c  $ arr array_init ->
+    a b c  $ expected array_init ->
+    10 arr array_truncate ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_truncate negative }
+{
+    a b c  $ arr array_init ->
+    a b    $ expected array_init ->
+    -1 arr array_truncate ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_truncate large negative }
+{
+    a b c  $ arr array_init ->
+    0 expected array_init ->
+    -10 arr array_truncate ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_index_of }
+{
+    a b c   $ arr array_init ->
+    a arr array_index_of -> 0 ==
+    b arr array_index_of -> 1 == &&
+    c arr array_index_of -> 2 == &&
+    d arr array_index_of -> -1 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_index_of duplicates }
+{
+    a b a b  $ arr array_init ->
+    a arr array_index_of -> 0 ==
+    b arr array_index_of -> 1 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_last_index_of }
+{
+    a b a b  $ arr array_init ->
+    a arr array_last_index_of -> 2 ==
+    b arr array_last_index_of -> 3 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_index_of_from }
+{
+    a b a b a b  $ arr array_init ->
+    a 0 arr array_index_of_from -> 0 ==
+    b 0 arr array_index_of_from -> 1 == &&
+    a 1 arr array_index_of_from -> 2 == &&
+    b 1 arr array_index_of_from -> 1 == &&
+    a 2 arr array_index_of_from -> 2 == &&
+    b 2 arr array_index_of_from -> 3 == &&
+    a -3 arr array_index_of_from -> 4 == &&
+    b -3 arr array_index_of_from -> 3 == &&
+    a -2 arr array_index_of_from -> 4 == &&
+    b -2 arr array_index_of_from -> 5 == &&
+    a -1 arr array_index_of_from -> -1 == &&
+    b -1 arr array_index_of_from -> 5 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_contains }
+{
+    a b c   $ arr array_init ->
+    a arr array_contains -> 
+    b arr array_contains -> &&
+    c arr array_contains -> &&
+    d arr array_contains -> ! &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_slice }
+{
+    a b c d e f  $ arr array_init ->
+    c d e  $ expected array_init ->
+    arr 2 3 arr2 array_slice ->
+    arr2 expected array_equal ->
+    arr array_size -> 6 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_slice zero length }
+{
+    a b c d e f  $ arr array_init ->
+    0 expected array_init ->
+    arr 2 0 arr2 array_slice ->
+    arr2 expected array_equal ->
+    arr array_size -> 6 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_slice before start }
+{
+    a b c d e f  $ arr array_init ->
+    0 expected array_init ->
+    arr -1 3 arr2 array_slice ->
+    arr2 expected array_equal ->
+    arr array_size -> 6 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_slice beyond end }
+{
+    a b c d e f  $ arr array_init ->
+    0 expected array_init ->
+    arr 6 3 arr2 array_slice ->
+    arr2 expected array_equal ->
+    arr array_size -> 6 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_slice from end }
+{
+    a b c d e f  $ arr array_init ->
+    c d e  $ expected array_init ->
+    arr -4 3 arr2 array_slice ->
+    arr2 expected array_equal ->
+    arr array_size -> 6 == &&
+    $ 1 == &&
+} register_test ->
+
+test # { array_slice from end with negative length }
+{
+    a b c d e f  $ arr array_init ->
+    c d e  $ expected array_init ->
+    arr -4 -2 arr2 array_slice ->
+    arr2 expected array_equal ->
+    arr array_size -> 6 == &&
+    $ 1 == &&
+} register_test ->
+
+run_tests ->

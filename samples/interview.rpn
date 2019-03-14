@@ -1,3 +1,5 @@
+{ uses library.rpn } #
+
 { Some methods that implement questions from "Cracking the Coding Interview". These
 are not going to be optimal solutions. RPN doesn't have the language features to
 make optimal solutions and the point here is to demonstrate that the language is
@@ -14,7 +16,7 @@ complete enough to solve the problems at all. } #
         last :=
         :: last ?! !=
         running_result ?! &&
-    } for_n -> <>
+    } for_n ->
     running_result :=
     #
     running_result ?!

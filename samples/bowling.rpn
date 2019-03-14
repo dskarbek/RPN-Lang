@@ -1,3 +1,5 @@
+{ uses library.rpn } #
+
 { A Program that calculates the bowling score, given a series of throw values } #
 
 { add_bonus_pins #

@@ -1,0 +1,471 @@
+{ uses library.rpn } #
+
+{ This is a collection of methods for doing array operations. The assumption is
+  that a given variable is an array (the stack of values are the elements of the
+  array). The array variables should not have any other values assigned to them
+  as this library assumes it is working on the full variable stack. } #
+
+{ { INIT
+    Create a new array variable from elements on the stack.
+    Expects 2 arguments: 
+    1. The number of elements on the stack to pull into the array
+    2. The name of the variable to use as the array (this variable will be
+        flushed by this method if it had any prior data assigned to it. } #
+  
+    :: flush_var ->
+    stack_n_to_var ->
+} array_init :=
+
+{ { CLONE
+    Create a new array variable from an existing array variable.
+    Expects 2 arguments:
+    1. The name of the array variable to copy
+    2. The name of the new array variable to make } #
+    newName :=
+    name :=
+    name ? array_size -> n :=
+
+    0 newName ? array_init ->
+    name ? var_to_stack ->
+    n ? duplicate_n ->
+    n ? name ? stack_n_to_var ->
+    n ? newName ? stack_n_to_var ->
+
+    newName unassign ->
+    name unassign ->
+    n unassign ->
+} array_clone :=
+
+{ { SIZE
+    Pushes the size of the array onto the stack.
+    Expects 1 arg: the name of the array variable } #
+    ?$
+} array_size :=
+
+
+{ { EQUAL
+    Compares two arrays to decide if they are completely equal
+    Expects 2 arguments: the names of the two array variables } #
+
+    name2 :=
+    name1 :=
+
+    if # name1 ? array_size -> name2 ? array_size -> !=
+    {
+        false
+    }
+    else #
+    {
+        0 shifted :=
+        while # { name1 ? ? name2 ? ? == name1 ? ?$ 0 > && }
+        {
+            name1 ? _array_shift_to_temp ->
+            name2 ? _array_shift_to_temp ->
+            shifted increment_var ->
+        } while ->
+        shifted ? name1 ? _array_shift_n_from_temp ->
+        shifted ? name2 ? _array_shift_n_from_temp ->
+        shifted ?! name1 ? array_size -> ==
+    } if_else ->
+
+    name1 unassign ->
+    name2 unassign ->
+} array_equal :=
+
+{ { GET INDEX
+    Gets an indexed value in an array and puts it on the stack. If called with an
+    invalid index, undef is put onto the stack.
+    Expects 2 arguments:
+    1. The index to get
+    2. The name of the array variable } #
+
+    name :=
+    i :=
+    if # i ? name ? _array_bounds_check ->
+    {
+        i ? name ? _array_shift_n_to_temp ->
+        name ? ?
+        i ? name ? _array_shift_n_from_temp ->
+    }
+    else #
+    {
+        undef
+    } if_else ->
+    name unassign ->
+    i unassign ->
+} array_get :=
+
+{ { SET INDEX
+    Sets a new value in a specified index of the array. Setting beyond the end of
+    the array pads the array out with undef values as needed to reach the desired
+    index for the new value. If called with a negative index, then nothing is set.
+    Expects 3 arguments:
+    1: the value to set
+    2: the index to set it at
+    3: the array to set it in. } #
+    name :=
+    i :=
+    val :=
+
+    if # i ? 0 >=
+    {
+        i ? name ? _array_shift_n_to_temp ->
+        name ? unassign ->
+        val ? name ? :=
+        i ? name ? _array_shift_n_from_temp ->
+    } if ->
+
+    val unassign ->
+    i unassign ->
+    name unassign ->
+} array_set :=
+
+{ { APPEND
+    Adds a single value to the end of the array
+    Expects 2 arguments:
+    1: the value to append
+    2: the array to append to } #
+    name :=
+    1 name ?! array_append_n ->
+} array_append :=
+
+{ { APPEND MULTIPLE ITEMS
+    Adds multiple values from the stack to the end of the array. Values are added
+    such that the top of stack value is the last value in the array.
+    Expects 2 arguments:
+    1: the number of values to pull off the stack
+    2: the array to append them to. } #
+    name :=
+    count :=
+    name ? array_size -> n :=
+    n ? name ? _array_shift_n_to_temp ->
+    count ? name ? stack_n_to_var ->
+    n ? name ? _array_shift_n_from_temp ->
+    n unassign ->
+    name unassign ->
+    count unassign ->
+} array_append_n :=
+
+{ { APPEND ARRAY
+    Adds one array onto the end of another array, the source array is not
+    modified, only the target array.  Pay attention to the argument ordering!
+    Expects 2 arguments:
+    1: the source array to copy from
+    2: the target array to append onto } #
+    name :=
+    source :=
+    source ? array_size -> count :=
+    source ? var_to_stack ->
+    count ? duplicate_n ->
+    count ? source ? stack_n_to_var ->
+    count ? name ? array_append_n ->
+    count unassign ->
+    source unassign ->
+    name unassign ->
+} array_append_array :=
+
+{ { FIRST
+    Peeks at the start of the array. Expects 1 arg: the array variable name } #
+    ?
+} array_first :=
+
+{ { LAST
+    Peeks at the end of the array. Expects 1 arg: the array variable name } #
+    name :=
+    name ? array_size -> 1 - name ?! array_get ->
+} array_last :=
+
+{ { SHIFT
+    Shifts a value out from the front of the array, shifting everything else down
+    Expects 1 argument: the array variable name } #
+    ?!
+} array_shift :=
+
+{ { UNSHIFT
+    Adds a value to the array at the beginning, shifting everything else down.
+    Expects 2 arguments:
+    1: the value to add
+    2: the array to add to } #
+    :=
+} array_unshift :=
+
+{ { PUSH
+    Treats the array like a stack, pushing a value onto the tail (though this is
+    inefficient compared to array_shift and array_unshift, so it would be better
+    to use those methods for a stack operation (or the underlying variable stack
+    nature provided by the language), but this method and the array_pop are provided
+    for similarity to other array libraries.
+    Expects 2 arguments:
+    1: the value to push on
+    2: the array to push to } #
+    array_append ->
+} array_push :=
+
+{ { POP
+    Removes the last value from the array and puts it on the stack.
+    Expects 1 argument: the array to pop a value from. } #
+    name :=
+    name ? array_size -> 1 - i :=
+    i ? name ? _array_shift_n_to_temp ->
+    name ? ?!
+    i ? name ? _array_shift_n_from_temp ->
+    i unassign ->
+    name unassign ->
+} array_pop :=
+
+{ { INSERT
+    Adds a value to the array at the given index, shifting the other values over.
+    If the index is less than zero nothing happens, if the index is beyond the
+    bounds of the array, the array is padded with undef as needed to get to the
+    requested index.
+    Expects 3 arguments:
+    1: the value to insert
+    2: the index to insert it at
+    3: the array to insert into } #
+    name :=
+    i :=
+    1 i ?! name ?! array_insert_n ->
+} array_insert :=
+
+{ { INSERT MULTIPLE
+    Inserts multiple values from the stack (keeping the top value at the end of
+    the list) into the array at the requested position. If the index is less than
+    zero nothing happens to the array (the arguments and list of values are
+    removed from the stack). If the index is beyond the bounds of the array, the
+    array is padded with undef as needed to get to the requested index.
+    Expects 3 arguments:
+    1: the number of values (before these arguments) to insert
+    2: the index to insert at
+    3: the array to insert into } #
+    name :=
+    i :=
+    count :=
+
+    if # i ? 0 >=
+    {
+        i ? name ? _array_shift_n_to_temp ->
+        count ? name ? stack_n_to_var ->
+        i ? name ? _array_shift_n_from_temp ->
+    }
+    else #
+    {
+        count ? flush_stack_n ->
+    } if_else ->
+
+    count unassign ->
+    i unassign ->
+    name unassign ->
+} array_insert_n :=
+
+{ { TRUNCATE
+    Ensures the array is not longer than the specified length.  If a negative
+    value is given, then that amount is trimmed off of the end of the array.
+    Expects 2 arguments:
+    1: the new size for the array
+    2: the array to truncate } #
+    name :=
+    size :=
+
+    if # size ? name ? array_size -> <
+    {
+        if # size ? 0 <
+        {
+            name ? array_size -> size ?! + size :=
+        } if ->
+
+        if # size 0 <=
+        {
+            name ? flush_var ->
+        }
+        else #
+        {
+            size ? name ? _array_shift_n_to_temp ->
+            name ? flush_var ->
+            size ? name ? _array_shift_n_from_temp ->
+        } if_else ->
+    } if ->
+
+    name unassign ->
+    size unassign ->
+} array_truncate :=
+
+{ { FIND INDEX OF
+    Searches the array for a value and pushes the index of the value onto the
+    stack. If duplicates exist, the first index is returned.
+    Expects 2 arguments:
+    1: the value to look for
+    2: the array to look in } #
+    name :=
+    0 name ?! array_index_of_from ->
+} array_index_of :=
+
+{ { FIND LAST INDEX OF
+    Searches the array for a value and pushes the index of the value onto the
+    stack. If duplicates exist, the last index is returned.
+    Expects 2 arguments:
+    1: the value to look for
+    2: the array to look in } #
+    name :=
+    val :=
+    0 i :=
+    -1 found_i :=
+
+    while # { name ? ?$ 0 > }
+    {
+        if # name ? ? val ? ==
+        {
+            i ? found_i overwrite_var ->
+        } if ->
+
+        name ? _array_shift_to_temp ->
+        i increment_var ->
+    } while ->
+    
+    i ? name ? _array_shift_n_from_temp ->
+    
+    found_i ?
+
+    name unassign ->
+    val unassign ->
+    i unassign ->
+    found_i unassign ->
+} array_last_index_of :=
+
+{ { FIND INDEX OF FROM
+    Searches the array for a value starting at the given index, and pushes the
+    index of the value onto the stack. If duplicates exist, the first index from
+    the start is returned.
+    Expects 3 arguments:
+    1: the value to look for
+    2: the index to start looking at
+    3: the array to look in } #
+    name :=
+    i :=
+    val :=
+
+    if # i ? 0 <
+    {
+        name ? array_size -> i ?! + i :=
+    } if ->
+
+    if # i ? name ? _array_bounds_check ->
+    {
+        { fast forward past the first i elements } #
+        i ? name ? _array_shift_n_to_temp ->
+
+        while # { name ? ?$ 0 >  name ? ? val ? != && }
+        {
+            name ? _array_shift_to_temp ->
+            i increment_var ->
+        } while ->
+
+        i ? name ? _array_shift_n_from_temp ->
+
+        i ? name ? array_size -> >= -1 i ? ?:
+    }
+    else #
+    {
+        -1
+    } if_else ->
+
+    name unassign ->
+    i unassign ->
+    val unassign ->
+} array_index_of_from :=
+
+{ { CONTAINS
+    Pushes a true or false onto the stack for whether the given value exists
+    in the given array.
+    Expects 2 arguments:
+    1: the value to look for
+    2: the array to look in } #
+    array_index_of -> -1 !=
+} array_contains :=
+
+{ { SLICE
+    Makes a new array by extracting a sub-range of an existing array. The range is
+    selected by a starting index and length of elements to select. If the index is
+    negative, it's an offset from the length of the array (-1 is the last element).
+    if the index is out of bounds, then the new array will be a zero element array.
+    if the length is longer than the existing array has elements for, then the
+    resulting length is simply truncated to what's available.  No undef's are
+    added to pad it out. If the length is negative, then it represents a stopping
+    point from the end of the array, same as the index. The index it selects is
+    the last element copied, if the index selected for the end is before the
+    starting index, then you simply get an empty array.
+    Expects 4 arguments:
+    1: The source array that a sub-range is being taken from
+    2: The index for the start of the range to copy
+    3: The (max) length of elements to copy
+    4: The name for the new array variable to create } #
+
+    newName :=
+    length :=
+    i :=
+    name :=
+
+    0 newName ? array_init ->
+
+    { deal with a negative start index } #
+    if # i ? 0 <
+    {
+        name ? array_size -> i ?! + i :=
+    } if ->
+
+    { deal with a negative length } #
+    if # length ? 0 <
+    {
+        name ? array_size -> length ? + end_i :=
+        if # end_i ? i ? <
+        {
+            0 length overwrite_var ->
+        }
+        else #
+        {
+            end_i ? i ? - 1 + length overwrite_var ->
+        } if_else ->
+    } if ->
+
+    if # i ? name ? _array_bounds_check ->  length ? 0 > &&
+    {
+        { truncate length to end of array if needed } #
+        if # i ? length ? + name ? array_size -> >
+        {
+            name ? array_size -> i - length overwrite_var ->
+        } if ->
+
+        i ? name ? _array_shift_n_to_temp ->
+        
+        name ? length ? var_to_stack_n ->
+        length ? duplicate_n ->
+        length ? name ? stack_n_to_var ->
+        length ? newName ? stack_n_to_var ->
+
+        i ? name ? _array_shift_n_from_temp ->
+    } if ->
+
+    newName unassign ->
+    length unassign ->
+    i unassign ->
+    name unassign ->
+} array_slice :=
+
+{ Helper methods
+    These are internal to the lib and assume that the variable 'name' holds the
+    name of the array variable. } #
+
+{ _ . } _array_temp :=
+{ name := name ? ?! name ?! _array_temp -> := } _array_shift_to_temp :=
+{ name := name ? _array_temp -> ?! name ?! := } _array_shift_from_temp :=
+{ " . { _array_shift_to_temp -> } . for_n -> } _array_shift_n_to_temp :=
+{ " . { _array_shift_from_temp -> } . for_n -> } _array_shift_n_from_temp :=
+
+{ { Check a value is a valid index.
+    Expects 2 arguments:
+    1. The name of the index variable
+    2. The name of the array variable } #
+    name :=
+    i :=
+    i ? name ?! array_size -> < i ?! 0 >= &&
+} _array_bounds_check :=
+
