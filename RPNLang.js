@@ -18,14 +18,21 @@ RPNLang.prototype.get_debug_lines = function() {
 };
 
 RPNLang.prototype.get_variables = function() {
-        let output = ""
-        for (var key in this.variables) {
-            if (this.variables[key].length > 0) {
-                output = key + ": " +
-                    this.variables[key].join(", ").replace(/\s+/g, " ") + "\n" +
-                    output;
-            }
+    let output = ""
+    for (var key in this.variables) {
+        if (this.variables[key].length > 0 && key.startsWith('_')) {
+            output = key + ": " +
+                this.variables[key].slice().reverse().join(", ").replace(/\s+/g, " ") + "\n" +
+                output;
         }
+    }
+    for (var key in this.variables) {
+        if (this.variables[key].length > 0 && ! key.startsWith('_')) {
+            output = key + ": " +
+                this.variables[key].slice().reverse().join(", ").replace(/\s+/g, " ") + "\n" +
+                output;
+        }
+    }
     return output;
 };
 
@@ -83,11 +90,18 @@ RPNLang.prototype.continue_debug = function() {
     }
 }
 
+RPNLang.prototype.recently_touched_var = function(name) {
+    let val = this.variables[name];
+    delete this.variables[name];
+    this.variables[name] = val;
+}
+
 RPNLang.prototype.push_var = function(name, val) {
     if (! (name in this.variables)) {
         this.variables[name] = [];
     }
     this.variables[name].push(val);
+    this.recently_touched_var(name);
 };
 
 RPNLang.prototype.peek_var = function(name) {
@@ -102,6 +116,7 @@ RPNLang.prototype.pop_var = function(name) {
         return undefined;
     }
     return this.variables[name].pop();
+    this.recently_touched_var(name);
 };
 
 RPNLang.prototype.var_depth = function(name) {
