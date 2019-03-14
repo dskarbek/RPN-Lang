@@ -1,0 +1,101 @@
+{ uses library.rpn } #
+{ uses ascii_lib.rpn } #
+
+test # { ascii_to_char }
+{
+    65 ascii_to_char -> A ==
+    97 ascii_to_char -> a == &&
+    32 ascii_to_char -> " == &&
+    27 ascii_to_char -> undef == &&
+    135 ascii_to_char -> undef == &&
+} register_test ->
+
+test # { char_to_ascii }
+{
+    A char_to_ascii -> 65 ==
+    a char_to_ascii -> 97 == &&
+    " char_to_ascii -> 32 == &&
+    abc char_to_ascii -> undef == &&
+} register_test ->
+
+test # { is_alpha }
+{
+    a is_alpha ->
+    m is_alpha -> &&
+    z is_alpha -> &&
+    A is_alpha -> &&
+    D is_alpha -> &&
+    Z is_alpha -> &&
+    3 is_alpha -> ! &&
+    " is_alpha -> ! &&
+    /@ is_alpha -> ! &&
+    /` is_alpha -> ! &&
+    /{ is_alpha -> ! &&
+    /[ is_alpha -> ! &&
+    $ 1 == &&
+} register_test ->
+
+test # { is_digit }
+{
+    0 is_digit ->
+    1 is_digit -> &&
+    2 is_digit -> &&
+    3 is_digit -> &&
+    4 is_digit -> &&
+    5 is_digit -> &&
+    6 is_digit -> &&
+    7 is_digit -> &&
+    8 is_digit -> &&
+    9 is_digit -> &&
+    A is_digit -> ! &&
+    \/ is_digit -> ! &&
+    \: is_digit -> ! &&
+    $ 1 == &&
+} register_test ->
+
+test # { is_alphnumeric }
+{
+    0 is_alphanumeric ->
+    1 is_alphanumeric -> &&
+    2 is_alphanumeric -> &&
+    6 is_alphanumeric -> &&
+    9 is_alphanumeric -> &&
+    a is_alphanumeric -> &&
+    m is_alphanumeric -> &&
+    z is_alphanumeric -> &&
+    A is_alphanumeric -> &&
+    D is_alphanumeric -> &&
+    Z is_alphanumeric -> &&
+    \/ is_alphanumeric -> ! &&
+    \: is_alphanumeric -> ! &&
+    " is_alphanumeric -> ! &&
+    /@ is_alphanumeric -> ! &&
+    /` is_alphanumeric -> ! &&
+    /{ is_alphanumeric -> ! &&
+    /[ is_alphanumeric -> ! &&
+    $ 1 == &&
+} register_test ->
+
+test # { to_upper }
+{
+    a to_upper -> A ==
+    A to_upper -> A == &&
+    7 to_upper -> 7 == &&
+    " to_upper -> " == &&
+    , to_upper -> , == &&
+    d to_upper -> D == &&
+    $ 1 == &&
+} register_test ->
+
+test # { to_upper }
+{
+    A to_lower -> a ==
+    a to_lower -> a == &&
+    7 to_lower -> 7 == &&
+    " to_lower -> " == &&
+    , to_lower -> , == &&
+    D to_lower -> d == &&
+    $ 1 == &&
+} register_test ->
+
+run_tests ->

@@ -2,13 +2,99 @@
     returns the numeric ascii code for a character.  Expects 1 argument: the
     character. If the input token is not a single character or is not recognized
     then undef is returned. } #
-    
+    a . char :=
+    { a . char ? == { true } { # false } if_else -> } _ascii_table_lookup ->
+    char unassign ->
 } char_to_ascii :=
 
 { { ASCII TO CHAR 
     Returns the character string for a numeric ascii code.  Expects 1 argument:
     the ascii number. } #
+    1 * ascii :=
+    { c := ascii ? == { c ?! true } { c ?! # false } if_else -> }  _ascii_table_lookup ->
+    ascii unassign ->
+} ascii_to_char :=
+
+{ { IS ALPHA 
+    Returns true if the input token is an upper or lower case letter } #
+    char_to_ascii ->
+    is_alpha_ascii ->
+} is_alpha :=
+
+{ { IS LOWER ASCII
+    Returns true if the input is the ascii value of a lower-case alphabet character } #
     a :=
+    a ? 97 >=  a ?! 122 <= &&
+} is_lower_ascii :=
+
+{ { IS UPPER ASCII
+    Returns true if the input is the ascii value of an upper-case alphabet character } #
+    a :=
+    a ? 65 >=  a ?!  90 <= &&
+} is_upper_ascii :=
+
+{ { IS ALPHA ASCII
+    Returns true if the input is the ascii value of an alphabet character } #
+    a :=
+    a ?  is_upper_ascii ->
+    a ?! is_lower_ascii -> ||
+} is_alpha_ascii :=
+
+{ { IS DIGIT 
+    Returns true if the input token is a number character } #
+    char_to_ascii ->
+    is_digit_ascii ->
+} is_digit :=
+
+{ { IS DIGIT ASCII
+    Returns true if the input token is the ascii code for a digit } #
+    a :=
+    a ? 48 >= a ?! 57 <= &&
+} is_digit_ascii :=
+
+{ { IS ALPHA-NUMERIC 
+    Returns true if the input token is either a digit or an alphabet character } #
+    char_to_ascii ->
+    a :=
+    a ?  is_digit_ascii ->
+    a ?! is_alpha_ascii -> ||
+} is_alphanumeric :=
+
+{ { TO UPPER 
+    Converts the top character on the stack into an upper-case letter if it is a
+    lower case letter. } #
+    char :=
+    char ? char_to_ascii ->
+    if # :: is_lower_ascii ->
+    {
+        32 - ascii_to_char ->
+    }
+    else #
+    {
+        # char ?
+    } if_else ->
+    char unassign ->
+} to_upper :=
+
+{ { TO LOWER 
+    Converts the top character on the stack into an upper-case letter if it is a
+    lower case letter. } #
+    char :=
+    char ? char_to_ascii ->
+    if # :: is_upper_ascii ->
+    {
+        32 + ascii_to_char ->
+    }
+    else #
+    {
+        # char ?
+    } if_else ->
+    char unassign ->
+} to_lower :=
+
+{ { INTERNAL ASCII TABLE LOOKUP } #
+    selector :=
+
     --START--
     32  "
     33  \!
@@ -106,37 +192,23 @@
     125 \}
     126 \~
 
-    undef char :=
-    0 ascii :=
+    undef result :=
+
     while # { :: --START-- != }
     {
-        char overwrite_var ->
-        ascii overwrite_var ->
-        if # a ? ascii ? ==
+        if # selector ->
         {
+            result overwrite ->
             stop_looping ->
         } if ->
     } while ->
 
-    while # { :: --START-- != }
+    
+    while # { --START-- != }
     {
-        # #
+        #
     } while ->
-    #
 
-    char ?
-
-    char unassign ->
-    ascii unassign ->
-    a unassign ->
-} ascii_to_char :=
-
-{ { IS ALPHA } # } #
-
-{ { IS NUMBER } # } #
-
-{ { IS ALPHA-NUMERIC } # } #
-
-{ { TO UPPER } # } #
-
-{ { TO LOWER } # } #
+    result ?!
+    selector unassign ->
+} _ascii_table_lookup :=
