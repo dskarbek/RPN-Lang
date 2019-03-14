@@ -250,13 +250,19 @@ RPNLang.prototype.apply_token = function(token, quoted) {
         case "->": injected_tokens = this.tokenize(this.peek_var(args[0])); break;
         case "#" : break; //pops one value off the stack
 
+        case "[]": 
+            const chars = args[0].split('');
+            this.stack = this.stack.concat(chars);
+            this.stack.push(chars.length);
+            break;
+
         default  :
-                //trim off any leading backslash used to escape the token
-                if (String(token).substring(0, 1) == "\\") {
-                        token = String(token).substring(1);
-                }
-                this.stack.push(token);
-                break;
+            //trim off any leading backslash used to escape the token
+            if (String(token).substring(0, 1) == "\\") {
+                    token = String(token).substring(1);
+            }
+            this.stack.push(token);
+            break;
     }
 
     return [quoted, breakpoint, injected_tokens];
@@ -309,6 +315,7 @@ RPNLang.prototype.popArgs = function(token) {
     case "->":
     case "()":
     case "::":
+    case "[]":
         args.unshift(this.stack.pop());
         break;
     }

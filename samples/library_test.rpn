@@ -112,6 +112,13 @@ test # { Other Operators } #
     test_multiple_expectations ->
 } test_fn :=
 
+test # { String to char array }
+{
+    abcdef []
+    a b c d e f 6
+    7 check_stack_is_matching_lists ->
+} register_test ->
+
 test # { Syntactic Sugar } #
 {
     { 2 true  { 1 + } if -> 3 == }

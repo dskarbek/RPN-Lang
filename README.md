@@ -52,6 +52,7 @@ Token | Description
 Token | Description
 ---- | -----
 `.` | Concatenate top two values (as strings) on the stack and push the result.
+`[]` | Break a token into a list of characters followed by a count.  Each character and the count becomes a distinct token.
 
 ## Control operators
 Token | Description
