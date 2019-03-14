@@ -9,7 +9,7 @@
 
 { Variable Manipulation Methods } #
 
-{ increment_var_by #
+{ increment_by #
     { Overwrites the variable with a new value that is an offset value from the
         current value.
         Expects 2 values:
@@ -18,13 +18,13 @@
     value :=
     name :=
     name ? ?! value ?! + name ?! :=
-} increment_var_by :=
+} increment_by :=
 
-{ -1 * increment_var_by -> } decrement_var_by :=
+{ -1 * increment_by -> } decrement_by :=
 
-{ 1 increment_var_by -> } increment_var :=
+{ 1 increment_by -> } increment :=
 
-{ -1 increment_var_by -> } decrement_var :=
+{ -1 increment_by -> } decrement :=
 
 { flush_var #
     { Removes all assigned values of a variable
@@ -39,17 +39,14 @@
     } if_else ->
 } flush_var :=
 
-{ overwrite_var #
+{ overwrite #
     { Assigns a value to a variable overwriting any prior value rather than
         pushing a new value onto the variable's stack.
         Expects 2 arguments: (Same format as the := operator)
         1. The value to set
         2. The variable name } #
-    name :=
-    value :=
-    name ? unassign ->
-    value ?! name ?! :=
-} overwrite_var :=
+    :: ?! # :=
+} overwrite :=
 
 
 { Loop & Branch Controls } #
@@ -58,7 +55,7 @@
     { A for loop implementation that supports nested for loops 
         Expects 3 arguments on the stack.
         1. A condition, either a literal boolean value or a string to evaluate
-        2. The loop increment_var code
+        2. The loop increment code
         3. The loop body
         The loop body may refer to the "stop_looping" function which only exists
         inside of the loop and forces the loop to stop after this eval of
@@ -70,7 +67,7 @@
     { The stop_looping method is only defined inside of a call to for } #
     true _for_cont :=
     { stop_looping #
-        false _for_cont overwrite_var ->
+        false _for_cont overwrite ->
     } stop_looping :=
 
     { Internal Tail-Recursion method which does the looping } #
@@ -102,7 +99,7 @@
     _for_n :=
     0 _for_i :=
 
-    for # { _for_i ? _for_n ? < } { _for_i increment_var -> }
+    for # { _for_i ? _for_n ? < } { _for_i increment -> }
         _for_n_body ?
     for ->
 
@@ -113,7 +110,7 @@
 
 { while #
     { Syntactic Sugar for a while loop.
-        Really, it's just a for loop with no increment_var code
+        Really, it's just a for loop with no increment code
         Expects 2 arguments:
         1. The condition
         2. The loop body } #
@@ -135,7 +132,7 @@
     { Because they might call stop_looping during the first run of the body, we
         have to provide our own stop_looping function and check it. } #
     true _do_while_cont :=
-    { false _do_while_cont overwrite_var -> } stop_looping :=
+    { false _do_while_cont overwrite -> } stop_looping :=
 
     _do_while_body ->
 
@@ -262,12 +259,12 @@
         {
             if # :: pivot ? sort_fn ->
             {
-                num_before increment_var ->
+                num_before increment ->
                 before :=
             }
             else #
             {
-                num_after increment_var ->
+                num_after increment ->
                 after :=
             } if_else ->
         } for_n ->
@@ -311,11 +308,11 @@
         if # :: target ? !=
         {
             temp :=
-            n increment_var ->
+            n increment ->
         }
         else #
         {
-            true found overwrite_var ->
+            true found overwrite ->
             stop_looping ->
         } if_else ->
     } for_n ->
@@ -358,15 +355,15 @@
     case_label :=
     result :=
     !!
-    tests increment_var ->
+    tests increment ->
     if # result ?!
     { 
-        pass increment_var ->
+        pass increment ->
         { [ OK ] } " case_label ?! !!
     }
     else #
     {
-        fail increment_var ->
+        fail increment ->
         [FAIL] " case_label ?! !!
     } if_else ->
 } test_expectation :=

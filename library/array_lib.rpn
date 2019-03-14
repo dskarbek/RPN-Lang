@@ -61,7 +61,7 @@
         {
             name1 ? _array_shift_to_temp ->
             name2 ? _array_shift_to_temp ->
-            shifted increment_var ->
+            shifted increment ->
         } while ->
         shifted ? name1 ? _array_shift_n_from_temp ->
         shifted ? name2 ? _array_shift_n_from_temp ->
@@ -314,11 +314,11 @@
     {
         if # name ? ? val ? ==
         {
-            i ? found_i overwrite_var ->
+            i ? found_i overwrite ->
         } if ->
 
         name ? _array_shift_to_temp ->
-        i increment_var ->
+        i increment ->
     } while ->
     
     i ? name ? _array_shift_n_from_temp ->
@@ -356,7 +356,7 @@
         while # { name ? ?$ 0 >  name ? ? val ? != && }
         {
             name ? _array_shift_to_temp ->
-            i increment_var ->
+            i increment ->
         } while ->
 
         i ? name ? _array_shift_n_from_temp ->
@@ -418,11 +418,11 @@
         name ? array_size -> length ? + end_i :=
         if # end_i ? i ? <
         {
-            0 length overwrite_var ->
+            0 length overwrite ->
         }
         else #
         {
-            end_i ? i ? - 1 + length overwrite_var ->
+            end_i ? i ? - 1 + length overwrite ->
         } if_else ->
     } if ->
 
@@ -431,7 +431,7 @@
         { truncate length to end of array if needed } #
         if # i ? length ? + name ? array_size -> >
         {
-            name ? array_size -> i - length overwrite_var ->
+            name ? array_size -> i - length overwrite ->
         } if ->
 
         i ? name ? _array_shift_n_to_temp ->
@@ -463,7 +463,7 @@
     var_name :=
 
     name ? array_size -> n :=
-    for # 0 i := { i ? n ? < } { i increment_var -> }
+    for # 0 i := { i ? n ? < } { i increment -> }
     {
         name ? ? var_name ? :=
         code_block ->

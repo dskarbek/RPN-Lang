@@ -134,15 +134,15 @@ test # { Syntactic Sugar } #
 test # { Variable Manipulations } #
 {
     { 5 a := a ?$ 1 == }
-    { a 2 increment_var_by -> a ? 7 == }
+    { a 2 increment_by -> a ? 7 == }
     { a ?$ 1 == }
-    { a 2 decrement_var_by -> a ? 5 == }
+    { a 2 decrement_by -> a ? 5 == }
     { a ?$ 1 == }
-    { a increment_var -> a ? 6 == }
+    { a increment -> a ? 6 == }
     { a ?$ 1 == }
-    { a decrement_var -> a ? 5 == }
+    { a decrement -> a ? 5 == }
     { a ?$ 1 == }
-    { 10 a overwrite_var -> a ? 10 == }
+    { 10 a overwrite -> a ? 10 == }
     { a ?$ 1 == }
     { 6 a := 7 a := a ?$ 3 == }
     { a flush_var -> a ?$ 0 == }
@@ -152,7 +152,7 @@ test # { Variable Manipulations } #
 
 test # { For Loop }
 {
-    for # 0 i := { i ? 5 < } { i increment_var -> }
+    for # 0 i := { i ? 5 < } { i increment -> }
     {
         i ?
     } for ->
@@ -163,10 +163,10 @@ test # { For Loop }
 
 test # { Double For Loop }
 {
-    for # 1 i := { i ? 7 < } { i increment_var -> }
+    for # 1 i := { i ? 7 < } { i increment -> }
     { 
         i ? 10 *
-        for # i ? j := { true } { j increment_var -> }
+        for # i ? j := { true } { j increment -> }
         { 
             j ?
             if # j ? 2 % 0 == 

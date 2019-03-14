@@ -50,7 +50,7 @@
     while # { $ 1 > }
     { 
         process_one_frame ->
-        completed_frames increment_var ->
+        completed_frames increment ->
         if # completed_frames ? 10 >=
         {
             running_total :=
