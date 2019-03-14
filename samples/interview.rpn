@@ -1,4 +1,5 @@
 { uses library.rpn } #
+{ uses array_lib.rpn } #
 
 { Some methods that implement questions from "Cracking the Coding Interview". These
 are not going to be optimal solutions. RPN doesn't have the language features to
@@ -77,5 +78,57 @@ test # { Unique Non-numeric List }
     $ 1 == &&
 } register_test ->
 
-<>
+
+{ { CHECK PERMUTATION
+    Given two strings, determine whether they are permutations of each other. } #
+    [] str2 array_init ->
+    [] str1 array_init ->
+    if # str1 array_size -> str2 array_size -> ==
+    {
+        str1 array_sort ->
+        str2 array_sort ->
+        str1 str2 array_equal ->
+    }
+    else #
+    {
+        false
+    } if_else ->
+} is_permutation :=
+
+test # { is_permutation positive }
+{
+    abc cab is_permutation ->
+} register_test ->
+
+test # { is_permutation negative }
+{
+    abc cad is_permutation -> !
+} register_test ->
+
+test # { is_permutation vs empty }
+{
+    abc { } is_permutation -> !
+} register_test ->
+
+test # { is_permutation empty v empty }
+{
+    { } { } is_permutation ->
+} register_test ->
+
+test # { is_permutation size mis-match }
+{
+    abc abbaccab is_permutation -> !
+} register_test ->
+
+
+
+{ { IS PALINDRONE PERMUTATION
+    Take a string and see if the non-space characters could be rearranged into a
+    palindrone } #
+} is_palindrone_permutation :=
+
+test # { is_palindrone_permutation positive }
+{
+    { Tact Coa } is_palindrone_permutation ->
+} register_test ->
 run_tests ->
