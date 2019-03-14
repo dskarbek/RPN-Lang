@@ -478,7 +478,31 @@
     name unassign ->
 } array_for_each :=
 
-{ Helper methods
+{ { SORT
+    Sorts the array. Expects 1 argument: the array to sort } #
+    name :=
+    { < } name ?! array_sort_by_fn ->
+} array_sort :=
+
+{ { SORT BY FUNCTION
+    Sorts the array by the given method.  The comparator should be a function that
+    takes two arguments and returns true iff the first argument belongs in front
+    of the second.
+    Expects 2 arguments:
+    1: The comparator function
+    2: The array to sort } #
+    name :=
+    sort_fn :=
+    name ? array_size -> n :=
+    name ? var_to_stack ->
+    n ? sort_fn ? sort_n_by_fn ->
+    n ? name ? stack_n_to_var ->
+    n unassign ->
+    sort_fn unassign ->
+    name unassign ->
+} array_sort_by_fn :=
+
+{ HELPER METHODS
     These are internal to the lib and assume that the variable 'name' holds the
     name of the array variable. } #
 

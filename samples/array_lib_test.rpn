@@ -400,4 +400,31 @@ test # { array_for_each }
     3 check_stack_is_matching_lists ->
 } register_test ->
 
+test # { array_sort alpha }
+{
+    c a b  $ arr array_init ->
+    a b c  $ expected array_init ->
+    arr array_sort ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_sort numeric }
+{
+    23 9 17  $ arr array_init ->
+    9 17 23  $ expected array_init ->
+    arr array_sort ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
+test # { array_sort reverse }
+{
+    23 9 17  $ arr array_init ->
+    23 17 9  $ expected array_init ->
+    { > } arr array_sort_by_fn ->
+    arr expected array_equal ->
+    $ 1 == &&
+} register_test ->
+
 run_tests ->
