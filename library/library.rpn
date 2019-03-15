@@ -231,7 +231,7 @@
         save ?! list :=
     } for_n ->
 
-    list var_to_stack ->
+    list n ? var_to_stack_n ->
 
     n unassign ->
 } duplicate_n :=
@@ -318,6 +318,7 @@
     } for_n ->
     temp n ? var_to_stack_n ->
     found ?!
+    n unassign ->
     target unassign ->
 } stack_contains :=
 
@@ -369,25 +370,6 @@
     } if_else ->
 } test_expectation :=
 
-{ test_multiple_expectations #
-    $ n :=
-    n ? test_cases stack_n_to_var ->
-    for_n # n ?!
-    {
-        test_cases -> test_cases ?! test_expectation ->
-    } for_n ->
-} test_multiple_expectations :=
-
-{ drop_test_output #
-    { If your test leaves output on the stack, call this method after you have
-        Computed your true/false test success result.  If will keep the result
-        on the top of the stack and flush the rest of it.  That way your normal
-        output doesn't cloud the test } #
-    result :=
-    $ flush_stack_n ->
-    result ?!
-} drop_test_output :=
-
 { check_stack_is_matching_lists #
     { This method is useful in tests for checking the results of a method that
         resolves to a list of values.
@@ -396,23 +378,27 @@
     n ? expected stack_n_to_var ->
     n ? actual stack_n_to_var ->
     true
-    for_n # n ?!
+    for_n # n ?
     {
         expected ?! actual ?! == &&
+        if # :: !
+        {
+            stop_looping ->
+        } if ->
     } for_n ->
+    n unassign ->
 } check_stack_is_matching_lists :=
 
-{ register_test #
-    { Creates a test function from a label and a code block that must resolve
-        to a boolean result on the top of the stack that indicates whether the
-        test passed or not. 
-        Expects 2 arguments:
-        1. The label for the test
-        2. The body of the test code } #
+{ { REGISTER TEST
+    Creates a test function from a label and a code block that must resolve
+    to a boolean result on the top of the stack that indicates whether the
+    test passed or not. 
+    Expects 2 arguments:
+    1. The label for the test
+    2. The body of the test code } #
     _test_body :=
     _test_label :=
     _test_body ?! 
-    { drop_test_output -> } . \n .
     \{ . " . _test_label ?! . " . \} . " . { test_expectation -> } .
     test_fn :=
 } register_test :=
@@ -434,7 +420,7 @@
     while # { $ 0 > }
     {
         param :=
-        _test_label ? " . \( . " . param ? . " . \) .
+        _test_label ? " . \{ . " . param ? . " . \} .
         param ? " . _test_body ? .
         register_test ->
         param unassign ->
@@ -444,11 +430,12 @@
     _test_label unassign ->
 } register_test_scenarios :=
 
-{ run_tests #
-    { Runs a collection of unit-tests stored in the test_fn variable. The tests
-        are expected to call test_expectation internally or else, they won't be
-        counted in the results. Tests are executed in the order they were assigned
-        to test_fn. } #
+{ { RUN TESTS
+    Runs a collection of unit-tests stored in the test_fn variable. The tests
+    are expected to call test_expectation internally or else, they won't be
+    counted in the results. Tests are executed in the order they were assigned
+    to test_fn. } #
+
     0 tests :=
     0 pass :=
     0 fail :=
