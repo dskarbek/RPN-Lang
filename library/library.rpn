@@ -353,8 +353,9 @@
         block that you assign to test_fn, or the test function as a short-hand
         and it will call this for you. } #
     case_label :=
+    $ 1 == && 
     result :=
-    !!
+
     tests increment ->
     if # result ?!
     { 
@@ -415,6 +416,33 @@
     \{ . " . _test_label ?! . " . \} . " . { test_expectation -> } .
     test_fn :=
 } register_test :=
+
+{ { MULTI-SCENARIO TEST
+    Registers a test along with a collection of input parameter sets and register
+    each one as a test. 
+    Expects 3 arguments:
+    1: A base label for the test 
+    2: A collection of inputs for the test body 
+    3: The test code body } #
+    _test_body :=
+    _scenario_collection :=
+    _test_label :=
+    
+    _scenario_collection ?! ()
+    $ reverse_n ->
+    
+    while # { $ 0 > }
+    {
+        param :=
+        _test_label ? " . \( . " . param ? . " . \) .
+        param ? " . _test_body ? .
+        register_test ->
+        param unassign ->
+    } while ->
+    
+    _test_body unassign ->
+    _test_label unassign ->
+} register_test_scenarios :=
 
 { run_tests #
     { Runs a collection of unit-tests stored in the test_fn variable. The tests

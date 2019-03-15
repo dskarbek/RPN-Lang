@@ -32,7 +32,6 @@ test # { is_alpha }
     /` is_alpha -> ! &&
     /{ is_alpha -> ! &&
     /[ is_alpha -> ! &&
-    $ 1 == &&
 } register_test ->
 
 test # { is_digit }
@@ -50,7 +49,6 @@ test # { is_digit }
     A is_digit -> ! &&
     \/ is_digit -> ! &&
     \: is_digit -> ! &&
-    $ 1 == &&
 } register_test ->
 
 test # { is_alphnumeric }
@@ -73,7 +71,6 @@ test # { is_alphnumeric }
     /` is_alphanumeric -> ! &&
     /{ is_alphanumeric -> ! &&
     /[ is_alphanumeric -> ! &&
-    $ 1 == &&
 } register_test ->
 
 test # { to_upper }
@@ -84,7 +81,6 @@ test # { to_upper }
     " to_upper -> " == &&
     , to_upper -> , == &&
     d to_upper -> D == &&
-    $ 1 == &&
 } register_test ->
 
 test # { to_upper }
@@ -95,7 +91,6 @@ test # { to_upper }
     " to_lower -> " == &&
     , to_lower -> , == &&
     D to_lower -> d == &&
-    $ 1 == &&
 } register_test ->
 
 run_tests ->

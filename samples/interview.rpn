@@ -1,11 +1,14 @@
 { uses library.rpn } #
 { uses array_lib.rpn } #
+{ uses ascii_lib.rpn } #
 
 { Some methods that implement questions from "Cracking the Coding Interview". These
 are not going to be optimal solutions. RPN doesn't have the language features to
 make optimal solutions and the point here is to demonstrate that the language is
 complete enough to solve the problems at all. } #
 
+
+{ ===================================================================== } #
 
 { is_unique #
     { Determine if a list is all unique values } #
@@ -23,61 +26,25 @@ complete enough to solve the problems at all. } #
     running_result ?!
 } is_unique :=
 
-test # { Empty List }
+test # { is_unique }
 {
+    { true }
+    { 1 true }
+    { 1 2 true }
+    { 1 1 false }
+    { 2 4 1 3 true }
+    { 4 1 2 1 3 false }
+    { a b a false }
+    { a b c true }
+}
+{
+    result :=
     is_unique ->
-    $ 1 == &&
-} register_test ->
+    result ?! ==
+} register_test_scenarios ->
 
-test # { Singleton List }
-{
-    1
-    is_unique ->
-    $ 1 == &&
-} register_test ->
 
-test # { Unique Pair List }
-{
-    1 2
-    is_unique ->
-    $ 1 == &&
-} register_test ->
-
-test # { Matching Pair List }
-{
-    1 1
-    is_unique -> !
-    $ 1 == &&
-} register_test ->
-
-test # { Unique List }
-{
-    2 4 1 3
-    is_unique ->
-    $ 1 == &&
-} register_test ->
-
-test # { Non-unique List }
-{
-    4 1 2 1 3
-    is_unique -> !
-    $ 1 == &&
-} register_test ->
-
-test # { Non-numeric List }
-{
-    a b a
-    is_unique -> !
-    $ 1 == &&
-} register_test ->
-
-test # { Unique Non-numeric List }
-{
-    a b c
-    is_unique ->
-    $ 1 == &&
-} register_test ->
-
+{ ===================================================================== } #
 
 { { CHECK PERMUTATION
     Given two strings, determine whether they are permutations of each other. } #
@@ -95,40 +62,167 @@ test # { Unique Non-numeric List }
     } if_else ->
 } is_permutation :=
 
-test # { is_permutation positive }
+test # { is_permutation }
 {
-    abc cab is_permutation ->
-} register_test ->
-
-test # { is_permutation negative }
+    { true  abc cab }
+    { false abc cad }
+    { false abc { } }
+    { true  { } { } }
+    { false abc abbaccab }
+}
 {
-    abc cad is_permutation -> !
-} register_test ->
-
-test # { is_permutation vs empty }
-{
-    abc { } is_permutation -> !
-} register_test ->
-
-test # { is_permutation empty v empty }
-{
-    { } { } is_permutation ->
-} register_test ->
-
-test # { is_permutation size mis-match }
-{
-    abc abbaccab is_permutation -> !
-} register_test ->
+    is_permutation -> ==
+} register_test_scenarios ->
 
 
+{ ===================================================================== } #
 
 { { IS PALINDRONE PERMUTATION
     Take a string and see if the non-space characters could be rearranged into a
     palindrone } #
+    [] str array_init ->
+
+    " str array_remove_all ->
+    for_each # char in # str
+    {
+        char ? to_upper -> str array_set_current ->
+    } array_for_each ->
+
+    str array_sort ->
+
+    0 cur_count :=
+    undef last_elem :=
+    0 num_odds :=
+
+    for_each # char in # str
+    {
+        if # char ? last_elem ? ==
+        {
+            cur_count increment ->
+        }
+        else #
+        {
+            if # cur_count ? 2 % 1 ==
+            {
+                num_odds increment ->
+            } if ->
+            1 cur_count overwrite ->
+            char ? last_elem overwrite ->
+        } if_else ->
+    } array_for_each ->
+
+    if # cur_count ? 2 % 1 ==
+    {
+        num_odds increment ->
+    } if ->
+
+    num_odds ? 1 <=
+
+    num_odds unassign ->
+    last_elem unassign ->
+    cur_count unassign ->
+    str array_unassign ->
 } is_palindrone_permutation :=
 
-test # { is_palindrone_permutation positive }
+test # { is_palindrone_permutation }
 {
-    { Tact Coa } is_palindrone_permutation ->
-} register_test ->
+    { true  { Tact Coa } }
+    { false { Tact Coat } }
+    { true  { } }
+    { true  ' }
+    { true  a }
+    { false ab }
+    { true  banan }
+    { false banana }
+}
+{
+    is_palindrone_permutation -> ==
+} register_test_scenarios ->
+
+
+{ ===================================================================== } #
+
+{ { Determines whether 2 strings are one edit away from each other. } #
+    [] str2 array_init ->
+    [] str1 array_init ->
+    str1 array_size -> str2 array_size -> - comp :=
+    if # comp ? 0 <
+    {
+        { Try removing from str2 } #
+        str2 str1 can_remove_to_match ->
+    }
+    else #
+    {
+        if # comp ? 0 >
+        {
+            { Try removing from str1 } #
+            str1 str2 can_remove_to_match ->
+        }
+        else #
+        {
+            str1 str2 can_change_to_match ->
+        } if_else ->
+    } if_else ->
+} is_one_edit_away :=
+
+{
+    object :=
+    subject :=
+    false found_match :=
+    for # 0 i := { i ? subject ? array_size -> < } { i increment -> }
+    {
+        i ? subject ? array_get -> char :=
+        i ? subject ? array_remove_at ->
+        if # subject ? object ? array_equal ->
+        {
+            true found_match overwrite ->
+            stop_looping ->
+        } if ->
+        char ?! i ? subject ? array_insert ->
+    } for ->
+
+    i unassign ->
+    subject unassign ->
+    object unassign ->
+    found_match ?!
+} can_remove_to_match :=
+
+{
+    object :=
+    subject :=
+    false found_match :=
+    for # 0 i := { i ? subject ? array_size -> < } { i increment -> }
+    {
+        i ? subject ? array_get -> old_char :=
+        i ? object ? array_get -> new_char :=
+        new_char ?! i ? subject ? array_set ->
+        if # subject ? object ? array_equal ->
+        {
+            true found_match overwrite ->
+            stop_looping ->
+        } if ->
+        old_char ?! i ? subject ? array_set ->
+    } for ->
+
+    i unassign ->
+    subject unassign ->
+    object unassign ->
+    found_match ?!
+} can_change_to_match :=
+
+test # { is_one_edit_away }
+{
+    { true  pale ple }
+    { true  ple pale }
+    { true  pale pales }
+    { true  pales pale }
+    { true  pale bale }
+    { true  bale pale }
+    { false pale bake }
+    { false bake pale }
+}
+{
+    is_one_edit_away -> ==
+} register_test_scenarios ->
+
 run_tests ->

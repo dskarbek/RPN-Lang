@@ -367,13 +367,11 @@ test # { sort evens and odds }
     {
         odds ?! 2 % 1 == &&
     } for_n ->
-    $ 1 == &&
 } register_test ->
 
 test # { Stack Contains empty stack }
 {
     foo stack_contains -> !
-    $ 1 == &&
 } register_test ->
 
 test # { Stack Contains success }

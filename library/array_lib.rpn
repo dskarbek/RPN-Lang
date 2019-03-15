@@ -44,7 +44,8 @@
 { { SIZE
     Pushes the size of the array onto the stack.
     Expects 1 arg: the name of the array variable } #
-    ?$
+    name :=
+    name ? ?$ name ?! _array_temp -> ?$ +
 } array_size :=
 
 

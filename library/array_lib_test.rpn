@@ -63,7 +63,6 @@ test # { array_equal different sizes }
     arr1 arr2 array_equal -> !
     arr1 array_size -> 3 == &&
     arr2 array_size -> 2 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_equal success }
@@ -73,7 +72,6 @@ test # { array_equal success }
     arr1 arr2 array_equal ->
     arr1 array_size -> 3 == &&
     arr2 array_size -> 3 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_equal different content }
@@ -83,7 +81,6 @@ test # { array_equal different content }
     arr1 arr2 array_equal -> !
     arr1 array_size -> 3 == &&
     arr2 array_size -> 3 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_clone }
@@ -94,7 +91,6 @@ test # { array_clone }
     arr1 array_size -> 3 ==
     arr2 array_size -> 3 == &&
     arr1 arr2 array_equal -> &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_set }
@@ -105,7 +101,6 @@ test # { array_set }
     1 arr array_get -> d ==
     arr expected array_equal -> &&
     arr array_size -> 3 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_set beyond end }
@@ -116,7 +111,6 @@ test # { array_set beyond end }
     4 arr array_get -> d ==
     arr expected array_equal -> &&
     arr array_size -> 5 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_set before start }
@@ -127,7 +121,6 @@ test # { array_set before start }
     -1 arr array_get -> undef ==
     arr expected array_equal -> &&
     arr array_size -> 3 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_append }
@@ -138,7 +131,6 @@ test # { array_append }
     3 arr array_get -> d ==
     arr expected array_equal -> &&
     arr array_size -> 4 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_append to empty }
@@ -147,7 +139,6 @@ test # { array_append to empty }
     foo arr array_append ->
     arr array_size -> 1 ==
     0 arr array_get -> foo == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_append_n }
@@ -156,7 +147,6 @@ test # { array_append_n }
     a b c d e f  $ expected array_init ->
     d e f  $ arr array_append_n ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_append_n }
@@ -166,7 +156,6 @@ test # { array_append_n }
     a b c d e f  $ expected array_init ->
     arr2 arr1 array_append_array ->
     arr1 expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_peekers }
@@ -174,7 +163,6 @@ test # { array_peekers }
     a b c   $ arr array_init ->
     arr array_first -> a ==
     arr array_last -> c == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_shift }
@@ -182,7 +170,6 @@ test # { array_shift }
     a b c  $ arr array_init ->
     arr array_shift -> a ==
     arr array_size -> 2 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_unshift }
@@ -192,7 +179,6 @@ test # { array_unshift }
     0 arr array_unshift -> 
     arr expected array_equal ->
     arr array_size -> 4 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_push }
@@ -201,7 +187,6 @@ test # { array_push }
     a b c d $ expected array_init ->
     d arr array_push ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_pop }
@@ -210,7 +195,6 @@ test # { array_pop }
     a b    $ expected array_init ->
     arr array_pop -> c ==
     arr expected array_equal -> &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_insert }
@@ -219,7 +203,6 @@ test # { array_insert }
     a b d c $ expected array_init ->
     d 2 arr array_insert ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_insert_n }
@@ -228,7 +211,6 @@ test # { array_insert_n }
     a b d e f c $ expected array_init ->
     d e f 3 2 arr array_insert_n ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_truncate }
@@ -237,7 +219,6 @@ test # { array_truncate }
     a b    $ expected array_init ->
     2 arr array_truncate ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_truncate zero }
@@ -246,7 +227,6 @@ test # { array_truncate zero }
     0 expected array_init ->
     0 arr array_truncate ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_truncate large }
@@ -255,7 +235,6 @@ test # { array_truncate large }
     a b c  $ expected array_init ->
     10 arr array_truncate ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_truncate negative }
@@ -264,7 +243,6 @@ test # { array_truncate negative }
     a b    $ expected array_init ->
     -1 arr array_truncate ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_truncate large negative }
@@ -273,7 +251,6 @@ test # { array_truncate large negative }
     0 expected array_init ->
     -10 arr array_truncate ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_index_of }
@@ -283,7 +260,6 @@ test # { array_index_of }
     b arr array_index_of -> 1 == &&
     c arr array_index_of -> 2 == &&
     d arr array_index_of -> -1 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_index_of duplicates }
@@ -291,7 +267,6 @@ test # { array_index_of duplicates }
     a b a b  $ arr array_init ->
     a arr array_index_of -> 0 ==
     b arr array_index_of -> 1 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_last_index_of }
@@ -299,7 +274,6 @@ test # { array_last_index_of }
     a b a b  $ arr array_init ->
     a arr array_last_index_of -> 2 ==
     b arr array_last_index_of -> 3 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_index_of_from }
@@ -317,7 +291,6 @@ test # { array_index_of_from }
     b -2 arr array_index_of_from -> 5 == &&
     a -1 arr array_index_of_from -> -1 == &&
     b -1 arr array_index_of_from -> 5 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_contains }
@@ -327,7 +300,6 @@ test # { array_contains }
     b arr array_contains -> &&
     c arr array_contains -> &&
     d arr array_contains -> ! &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_slice }
@@ -337,7 +309,6 @@ test # { array_slice }
     arr 2 3 arr2 array_slice ->
     arr2 expected array_equal ->
     arr array_size -> 6 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_slice zero length }
@@ -347,7 +318,6 @@ test # { array_slice zero length }
     arr 2 0 arr2 array_slice ->
     arr2 expected array_equal ->
     arr array_size -> 6 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_slice before start }
@@ -357,7 +327,6 @@ test # { array_slice before start }
     arr -1 3 arr2 array_slice ->
     arr2 expected array_equal ->
     arr array_size -> 6 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_slice beyond end }
@@ -367,7 +336,6 @@ test # { array_slice beyond end }
     arr 6 3 arr2 array_slice ->
     arr2 expected array_equal ->
     arr array_size -> 6 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_slice from end }
@@ -377,7 +345,6 @@ test # { array_slice from end }
     arr -4 3 arr2 array_slice ->
     arr2 expected array_equal ->
     arr array_size -> 6 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_slice from end with negative length }
@@ -387,7 +354,6 @@ test # { array_slice from end with negative length }
     arr -4 -2 arr2 array_slice ->
     arr2 expected array_equal ->
     arr array_size -> 6 == &&
-    $ 1 == &&
 } register_test ->
 
 test # { array_for_each }
@@ -413,7 +379,6 @@ test # { array_for_each modifying }
         } if ->
     } array_for_each ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_sort alpha }
@@ -422,7 +387,6 @@ test # { array_sort alpha }
     a b c  $ expected array_init ->
     arr array_sort ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_sort numeric }
@@ -431,7 +395,6 @@ test # { array_sort numeric }
     9 17 23  $ expected array_init ->
     arr array_sort ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_sort reverse }
@@ -440,7 +403,6 @@ test # { array_sort reverse }
     23 17 9  $ expected array_init ->
     { > } arr array_sort_by_fn ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_remove_at first }
@@ -449,7 +411,6 @@ test # { array_remove_at first }
     2 3    $ expected array_init ->
     0 arr array_remove_at ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_remove_at middle }
@@ -458,7 +419,6 @@ test # { array_remove_at middle }
     1 3    $ expected array_init ->
     1 arr array_remove_at ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_remove_at last }
@@ -467,7 +427,6 @@ test # { array_remove_at last }
     1 2    $ expected array_init ->
     2 arr array_remove_at ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_remove_at too low }
@@ -476,7 +435,6 @@ test # { array_remove_at too low }
     1 2 3  $ expected array_init ->
     -1 arr array_remove_at ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_remove_at too high }
@@ -485,7 +443,6 @@ test # { array_remove_at too high }
     1 2 3  $ expected array_init ->
     4 arr array_remove_at ->
     arr expected array_equal ->
-    $ 1 == &&
 } register_test ->
 
 test # { array_remove_all }
@@ -494,7 +451,6 @@ test # { array_remove_all }
     b c   $ expected array_init ->
     a arr array_remove_all ->
     arr expected array_equal ->
-    $ 1 == &&    
 } register_test ->
 
 run_tests ->
