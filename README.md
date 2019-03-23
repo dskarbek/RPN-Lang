@@ -11,7 +11,7 @@ Token | Description
 `\val` | A backslash is removed from the start of a constant and the rest of the token is always taken as a constant. Use this to escape an operator to be processed as a constant.
 `#` | Pops and discards the last token on the stack, use along with `{ ... }` to make comments
 `true` | A boolean true value.
-`false` | A boolean false value. These are the only words that are reserved symbols.
+`false` | A boolean false value.
 `undef` | The value a variable has before it is assigned to.
 `"` | Push a single space onto the stack.
 `\n` | Push a new line character onto the stack.
