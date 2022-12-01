@@ -1,6 +1,8 @@
 # RPN-Lang
 JavaScript implementation of an interpreter for a little language based on Reverse Polish Notation (RPN)
 
+[Try it out here!](https://dskarbek.github.io/RPN-Lang/rpn_test.html)
+
 # Language
 Evaluates a reverse polish notation expression against a set of variables. The expected format is that white-space separates each token. The basic run-time elements are the stack of parsed tokens and a hash-table of variables.
 
